@@ -1,0 +1,33 @@
+h3, h5 {
+  margin: 0 0 20px 0;
+  text-align: center;
+}
+
+/* Example of Variable*/
+a {
+  color: green;
+  font-weight: bold;
+}
+
+/* Example of Inheritance*/
+h5 {
+  font-size: 20px;
+}
+
+h3 {
+  font-size: 30px;
+}
+
+/* Example of Nesting */
+table {
+  font-size: 17px;
+  text-align: center;
+}
+table th {
+  text-decoration: underline;
+}
+table td {
+  font-style: italic;
+}
+
+/*# sourceMappingURL=sass.css.map */
