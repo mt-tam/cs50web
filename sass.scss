@@ -1,0 +1,38 @@
+$color : green;
+
+%text {
+    margin: 0 0 20px 0;
+    text-align:center;
+}
+
+/* Example of Variable*/
+a {
+    color: $color;
+    font-weight: bold;
+}
+
+/* Example of Inheritance*/
+
+h5 {
+    @extend %text;
+    font-size: 20px;
+}
+h3 {
+    @extend %text;
+    font-size: 30px;
+}
+
+/* Example of Nesting */
+
+table {
+    font-size: 17px;
+    text-align:center;
+    th {
+        text-decoration: underline;
+    }
+    td {
+        font-style: italic;
+    }
+}
+
+

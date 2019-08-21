@@ -1,0 +1,27 @@
+@media (min-width: 800px){
+    body {
+        background: rgba(200, 200, 236, 0.3);
+    }}
+@media (max-width: 799px){
+    body {
+        background: rgba(250,0,0,1);
+    }}
+
+div {
+    margin: 30px;
+}
+
+#title {
+    text-align:center;
+}
+.list-group-item {
+    background-color: rgba(190, 190, 190, 0.7);
+    text-align:center;
+}
+#menu {
+    background-color: rgba(100,100,100,1);
+    color:white;
+}
+a:hover {
+    background-color: yellow;
+}
