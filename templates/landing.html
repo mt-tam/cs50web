@@ -18,18 +18,10 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <span class="navbar-brand mb-0 h1">Project #1 - This is my book review website! </span>
-        <form action="{{ url_for ('logout') }}">
-            <button class="btn btn-light" type="submit">Logout</button>
-        </form>
-    </nav>
-
     <div class="container">
-        <h1 id="title">{% block title %} {% endblock %}</h1>
+        <a class="btn btn-primary" href="{{ url_for ('register') }}" role="button">Register</a>
+        <a class="btn btn-secondary" href="{{ url_for ('login') }}" role="button">Login</a>
     </div>
-
-    {% block body %} {% endblock %}
 </body>
 
 </html>
