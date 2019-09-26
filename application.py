@@ -63,7 +63,8 @@ def register():
         # Create user in database, create new session and re-direct user to list
         else:
             new_user = db.execute("INSERT INTO users (email, password) VALUES (:email, :password)", {"email": email, "password": password})
-            print(new_user)
+            db.commit()
+            print(new_user.rowcount)
             #session["user_id"] = new_user["id"]
             return redirect("/list")
 
@@ -152,10 +153,9 @@ def add_review():
     # Get current date and time
     now = datetime.now()
 
-    print(f"Your rating was created on {now} for book #{book_id['id']} with ISBN:{isbn} is {rating} and your review is // {review} //")
-    
     # Add rating & review to database
     db.execute("INSERT INTO reviews (book_id, user_id, rating, review, created_on) VALUES (:book_id, :user_id, :rating, :review, :created_on)", {"book_id" : book_id["id"], "user_id" : session["user_id"], "rating" : rating, "review" : review, "created_on": now})
+    db.commit()
     
     # Reload page with review
     return redirect(url_for('book') + "?isbn=" + isbn)
@@ -192,7 +192,6 @@ def book():
 
     # Get book reviews from database
     book_reviews = db.execute("SELECT user_id, review, rating, created_on FROM reviews WHERE book_id = :book_id", {"book_id": book["id"]}).fetchall()
-    print(book_reviews)
 
     # Check whether user already has submitted a review
     user_id = session["user_id"]

@@ -27,14 +27,13 @@
 
                     <!-- Show no. of reviews and average rating from Goodreads-->
                     <bold style="color:#c93838; font-size:20px">Goodreads Reviews</bold><br>
-                    <small>Number of Ratings: {{book.review_count}}</small><br>
-                    <small>Average Rating: {{book.average_score}}</small><br><br><br>
+                    <p>Number of Ratings: {{book.review_count}}<br> Average Rating: {{book.average_score}}</p><br><br><br>
                     
                     <!-- Allow user to add his/her own review (only if no review exists yet by same user)-->
                     <bold style="color:#c93838; font-size:20px">Submit a Review</bold><br>
 
                     {% if review_exists == True %}
-                    <small>You have already submitted a review for this book.</small>
+                    <p>You have already submitted a review for this book.</p>
 
                     {% else %}
                     <form action="{{ url_for('add_review')}}" method="post">
@@ -87,6 +86,9 @@
         <tbody>
 
             <!-- For each review, create a new row in the table-->
+            {% if reviews|length == 0 %}
+            <tr><td colspan="4">No reviews added yet.</td></tr>
+            {% else %}
             {% for review in reviews %}
             <tr>
                 <td>{{review.user_id}}</td>
@@ -95,6 +97,7 @@
                 <td>{{review.created_on.strftime("%d %B %Y at %H:%M")}}</td>
             </tr>
             {% endfor %}
+            {% endif %}
         </tbody>
     </table>
 </div>
