@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+
+<!-- Show user id at top of the page -->
+{% block user %} {{user_id}} {% endblock %}
+
+{% block body %}
+
+<div style = "margin: 30px 60px" class="container">   
+    <div class="row">
+        
+        <!-- Show book image (as well as ISBN) -->
+        <div class="col-4">
+            <img src="http://covers.openlibrary.org/b/isbn/{{book.isbn}}-L.jpg"/><br>
+            <small>ISBN {{book.isbn}}</small><br>
+            <small>Courtesy of <a href="http://openlibrary.org/isbn/{{book.isbn}}" target="_blank">Open Library</a></small>
+        </div>
+
+        <!-- Show book title and author -->
+        <div class="col-6">
+            <button class="btn"><a href="{{ url_for ('list') }}">⬅️ Back</a></button>
+            
+            <br><br><h2>{{book.title}} ({{book.year}}) </h2>
+            <h4>by {{book.author}}</h4><br><br>
+            
+            <div class="row">
+                <div class="col">
+
+                    <!-- Show no. of reviews and average rating from Goodreads-->
+                    <bold style="color:#c93838; font-size:20px">Goodreads Reviews</bold><br>
+                    <p>Number of Ratings: {{book.review_count}}<br> Average Rating: {{book.average_score}}</p><br><br><br>
+                    
+                    <!-- Allow user to add his/her own review (only if no review exists yet by same user)-->
+                    <bold style="color:#c93838; font-size:20px">Submit a Review</bold><br>
+
+                    {% if review_exists == True %}
+                    <p>You have already submitted a review for this book.</p>
+
+                    {% else %}
+                    <form action="{{ url_for('add_review')}}" method="post">
+                        <div class="row">
+                            <input type="hidden" name="isbn" value="{{book.isbn}}">
+                            
+                            <!-- Ask for numeric rating -->
+                            <div class="form-group col">
+                                <label>Your Rating</label>
+                                <select class="form-control" name="rating">
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Ask for text review -->
+                            <div class="form-group col">
+                                <label>Your Review</label>
+                                <textarea class="form-control" rows="3" name="review" placeholder="Enter your review here"></textarea>
+                            </div>
+
+                            <!-- Submit review -->
+                            <div class="form-group col">
+                                <button style="background-color:#43ab92; border-color:#43ab92; color:white" class="btn btn-primary" type="submit">Add review</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Show existing reviews (from all users)-->
+<div style = "margin: 0 60px" class="container">
+    <bold style="color:#c93838; font-size:20px">All reviews</bold>
+    <br>
+    <br>
+    <table class="table table-striped">
+        <thead style="background-color:#512c62; color:white" class="thead">
+            <th>User ID</th>
+            <th>Review</th>
+            <th>Rating</th>
+            <th>Created On</th>
+        </thead>
+        <tbody>
+
+            <!-- For each review, create a new row in the table-->
+            {% if reviews|length == 0 %}
+            <tr><td colspan="4">No reviews added yet.</td></tr>
+            {% else %}
+            {% for review in reviews %}
+            <tr>
+                <td>{{review.user_id}}</td>
+                <td>{{review.review}}</td>
+                <td>{{review.rating}}/5</td>
+                <td>{{review.created_on.strftime("%d %B %Y at %H:%M")}}</td>
+            </tr>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Link to Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <!-- Media Query -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Link to Stylesheets-->
+    <link rel="stylesheet" type="text/css" href="./static/styles.css">
+
+</head>
+
+<body style="background-image: url(https://picsum.photos/id/24/1920/1440?grayscale)">
+    
+    <!-- Show a navbar -->
+    <nav class="navbar navbar-dark d-flex justify-content-end">
+
+        <!-- Allow user to register an account -->
+        <a style="margin: 0px 10px 0px 10px; background-color:#512c62; border-color:#512c62; color:white; font-size:20px" class="btn" href="{{ url_for ('register') }}" role="button">Register</a>
+                    
+        <!-- Allow user to login -->
+        <a style="background-color:#512c62; border-color:#512c62; color:white; font-size:20px"  class="btn" href="{{ url_for ('login') }}" role="button">Login</a>
+    </nav>
+
+    <div style="margin: 300px 0px" class="container"></div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="container">
+                <h1 style="color:black; font-size: 60px">Welcome to Project 1</h1>
+                <p style="color: black; font-size: 30px; text-align:center; font-stretch: expanded">My own book review website created for HarvardX's CS50 Web Development course.</p>
+            </div>
+        <div class="col-3"></div>
+
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-6">
+                    
+                </div>
+                <div class="col-3"></div>
+            </div>
+        </div>
+        <div class="col-4"></div>
+    </div>
+        
+        
+</body>
+
+</html>

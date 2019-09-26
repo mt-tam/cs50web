@@ -1,0 +1,74 @@
+{% extends "layout.html" %}
+
+<!-- Show user id at top of the page -->
+{% block user %} {{user_id}} {% endblock %}
+
+{% block body %}
+<div class="container">   
+    <div style = "margin: 30px 30px 30px 300px" class="row">
+
+        <!-- Placeholder div -->
+        <div class="col-2"></div>
+
+        <!-- Allow user to search books -->
+        <div class="col-8">
+            <form action="{{ url_for ('search') }}" class="form-inline">
+                <div class="row">
+                    <div class="from-group">
+                        <input class="form-control" type="search" name="keyword" placeholder="Search for books here">
+                        <button style="background-color:#43ab92; border-color:#43ab92; color:white" class="btn" type="submit">Search</button>
+                    </div>
+                    <div class="col"></div>
+                    
+                    {% if search_true == True %}
+                    <div class="col"><button class="btn"><a href="{{ url_for ('list') }}">✖️ Clear search</a></button></div>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+        
+        <!-- Placeholder div -->
+        <div class="col-2"></div>
+    </div>
+    <div class="row">
+        
+        <!-- Placeholder div -->
+        <div class="col-3"></div>
+
+        <!-- Show user list of books -->
+        <div class="col-6 list-group">
+            <ul>
+                
+                <!-- Verify if at least a book was found during search-->
+                {% if books|length > 0 %}
+                
+                <!-- Show preview for each book -->
+                {% for book in books %}
+                <a href="{{ url_for ('book') }}?isbn={{ book.isbn }}" class="container list-group-item list-group-item-action flex-column align-items-start">
+                    <div class="row">
+                        <div class="col-4">
+                            <img src="http://covers.openlibrary.org/b/isbn/{{book.isbn}}-M.jpg" width="126" height="206.5" />
+                        </div>
+                        <div style="margin:0px 10px" class="col-6">
+                            <h5 class="mb-1">{{book.title}}</h5>
+                            <small class="text-muted">{{book.year}}</small>
+                            <p class="mb-1">{{book.author}}</p>
+                            <small>{{book.isbn}}</small>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+
+                <!-- Show error message if no books were found -->
+                {% else %}
+                <h6>No books were found. Please try a different keyword.</h6>
+
+                {% endif %}
+            </ul>
+        </div>
+        
+        <!-- Placeholder div -->
+        <div class="col-3"></div>
+    </div>
+</div>
+{% endblock %}
