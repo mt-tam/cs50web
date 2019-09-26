@@ -12,23 +12,26 @@
     <!-- Media Query -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- Link to Stylesheets-->
+    <!-- Link to Stylesheets -->
     <link rel="stylesheet" type="text/css" href="./static/styles.css">
 
 </head>
 
 <body>
-    <nav class="navbar navbar-dark bg-dark">
-        <span class="navbar-brand mb-0 h1">Project #1 - This is my book review website! </span>
+    
+    <!-- Show a navbar -->
+    <nav style= "background-color: #512c62" class="navbar navbar-dark">
+        
+        <!-- Show user's ID -->
+        <span class="navbar-brand mb-0">Welcome! You have user id #{% block user %} {% endblock %} </span>
+        
+        <!-- Allow user to logout -->
         <form action="{{ url_for ('logout') }}">
-            <button class="btn btn-light" type="submit">Logout</button>
+            <button style="background-color:#43ab92; border-color:#43ab92; color:white" class="btn btn-light" type="submit">Logout</button>
         </form>
     </nav>
 
-    <div class="container">
-        <h1 id="title">{% block title %} {% endblock %}</h1>
-    </div>
-
+    <!-- Allow other pages to fill the body of the page -->
     {% block body %} {% endblock %}
 </body>
 

@@ -17,11 +17,40 @@
 
 </head>
 
-<body>
-    <div class="container">
-        <a class="btn btn-primary" href="{{ url_for ('register') }}" role="button">Register</a>
-        <a class="btn btn-secondary" href="{{ url_for ('login') }}" role="button">Login</a>
+<body style="background-image: url(https://picsum.photos/id/24/1920/1440?grayscale)">
+    
+    <!-- Show a navbar -->
+    <nav class="navbar navbar-dark d-flex justify-content-end">
+
+        <!-- Allow user to register an account -->
+        <a style="margin: 0px 10px 0px 10px; background-color:#512c62; border-color:#512c62; color:white; font-size:20px" class="btn" href="{{ url_for ('register') }}" role="button">Register</a>
+                    
+        <!-- Allow user to login -->
+        <a style="background-color:#512c62; border-color:#512c62; color:white; font-size:20px"  class="btn" href="{{ url_for ('login') }}" role="button">Login</a>
+    </nav>
+
+    <div style="margin: 300px 0px" class="container"></div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="container">
+                <h1 style="color:black; font-size: 60px">Welcome to Project 1</h1>
+                <p style="color: black; font-size: 30px; text-align:center; font-stretch: expanded">My own book review website created for HarvardX's CS50 Web Development course.</p>
+            </div>
+        <div class="col-3"></div>
+
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-6">
+                    
+                </div>
+                <div class="col-3"></div>
+            </div>
+        </div>
+        <div class="col-4"></div>
     </div>
+        
+        
 </body>
 
 </html>

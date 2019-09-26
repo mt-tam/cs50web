@@ -1,42 +1,101 @@
 {% extends "layout.html" %}
 
-{% block title %} BOOK PAGE {% endblock %}
+<!-- Show user id at top of the page -->
+{% block user %} {{user_id}} {% endblock %}
 
 {% block body %}
 
-<div class="container">
-    <img src="http://covers.openlibrary.org/b/isbn/{{book.isbn}}-M.jpg" />
-    <p>Image by courtesy of Open Library: <a href="http://openlibrary.org/isbn/{{book.isbn}}" target="_blank">Original Book Page</a></p>
-    <h3>Title: {{book.title}}</h3>
-    <h4>Author: {{book.author}}</h4>
-    <h4>Year: {{book.year}}</h4>
-    <h5>ISBN: {{book.isbn}}</h5>
-    <bold>Goodreads Reviews</bold>
-    <h6>Ratings: {{book.review_count}}</h6>
-    <h6>Avg. Rating: {{book.average_score}}</h6>
+<div style = "margin: 30px 60px" class="container">   
+    <div class="row">
+        
+        <!-- Show book image (as well as ISBN) -->
+        <div class="col-4">
+            <img src="http://covers.openlibrary.org/b/isbn/{{book.isbn}}-L.jpg"/><br>
+            <small>ISBN {{book.isbn}}</small><br>
+            <small>Courtesy of <a href="http://openlibrary.org/isbn/{{book.isbn}}" target="_blank">Open Library</a></small>
+        </div>
+
+        <!-- Show book title and author -->
+        <div class="col-6">
+            <button class="btn"><a href="{{ url_for ('list') }}">⬅️ Back</a></button>
+            
+            <br><br><h2>{{book.title}} ({{book.year}}) </h2>
+            <h4>by {{book.author}}</h4><br><br>
+            
+            <div class="row">
+                <div class="col">
+
+                    <!-- Show no. of reviews and average rating from Goodreads-->
+                    <bold style="color:#c93838; font-size:20px">Goodreads Reviews</bold><br>
+                    <small>Number of Ratings: {{book.review_count}}</small><br>
+                    <small>Average Rating: {{book.average_score}}</small><br><br><br>
+                    
+                    <!-- Allow user to add his/her own review (only if no review exists yet by same user)-->
+                    <bold style="color:#c93838; font-size:20px">Submit a Review</bold><br>
+
+                    {% if review_exists == True %}
+                    <small>You have already submitted a review for this book.</small>
+
+                    {% else %}
+                    <form action="{{ url_for('add_review')}}" method="post">
+                        <div class="row">
+                            <input type="hidden" name="isbn" value="{{book.isbn}}">
+                            
+                            <!-- Ask for numeric rating -->
+                            <div class="form-group col">
+                                <label>Your Rating</label>
+                                <select class="form-control" name="rating">
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                    <option value="2">2</option>
+                                    <option value="1">1</option>
+                                </select>
+                            </div>
+                            
+                            <!-- Ask for text review -->
+                            <div class="form-group col">
+                                <label>Your Review</label>
+                                <textarea class="form-control" rows="3" name="review" placeholder="Enter your review here"></textarea>
+                            </div>
+
+                            <!-- Submit review -->
+                            <div class="form-group col">
+                                <button style="background-color:#43ab92; border-color:#43ab92; color:white" class="btn btn-primary" type="submit">Add review</button>
+                            </div>
+                        </div>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div class="container">
-    <form action="{{ url_for('add_review')}}" method="post">
-        <input type="hidden" name="isbn" value="{{book.isbn}}">
-        <div class="form-group">
-            <label>Your Rating</label>
-            <select class="form-control" name="rating">
-                <option value="5">5</option>
-                <option value="4">4</option>
-                <option value="3">3</option>
-                <option value="2">2</option>
-                <option value="1">1</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Your Review</label>
-            <textarea class="form-control" rows="3" name="review">Enter your review here</textarea>
-            <button class="btn btn-secondary" type="submit">Submit</button>
-        </div>
-    </form>
+<!-- Show existing reviews (from all users)-->
+<div style = "margin: 0 60px" class="container">
+    <bold style="color:#c93838; font-size:20px">All reviews</bold>
+    <br>
+    <br>
+    <table class="table table-striped">
+        <thead style="background-color:#512c62; color:white" class="thead">
+            <th>User ID</th>
+            <th>Review</th>
+            <th>Rating</th>
+            <th>Created On</th>
+        </thead>
+        <tbody>
+
+            <!-- For each review, create a new row in the table-->
+            {% for review in reviews %}
+            <tr>
+                <td>{{review.user_id}}</td>
+                <td>{{review.review}}</td>
+                <td>{{review.rating}}/5</td>
+                <td>{{review.created_on.strftime("%d %B %Y at %H:%M")}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
-
-
-
 {% endblock %}

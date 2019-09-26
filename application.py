@@ -62,8 +62,9 @@ def register():
         
         # Create user in database, create new session and re-direct user to list
         else:
-            db.execute("INSERT INTO users (email, password) VALUES (:email, :password)", {"email": email, "password": password})
-            session["user_id"] = user_exists["id"]
+            new_user = db.execute("INSERT INTO users (email, password) VALUES (:email, :password)", {"email": email, "password": password})
+            print(new_user)
+            #session["user_id"] = new_user["id"]
             return redirect("/list")
 
 
@@ -119,16 +120,15 @@ def logout():
 def list():
 
     # If user is not logged in, redirect to login page
-    if session["user_id"] == None: 
+    if not session["user_id"]:
         error_message = "You must be logged in to access that page."
         return render_template("login.html", error=error_message)
 
     # Retrieve all books (limit = 20 books)
-    books = db.execute(
-        "SELECT isbn, title, author, year FROM books LIMIT 20").fetchall()
+    books = db.execute("SELECT isbn, title, author, year FROM books LIMIT 20").fetchall()
 
     # Render a list of all books
-    return render_template("list.html", books=books)
+    return render_template("list.html", books=books, user_id=session["user_id"], search_true=False)
 
 
 # --------------- SUBMIT REVIEW --------------- #
@@ -137,7 +137,7 @@ def list():
 def add_review():
 
     # If user is not logged in, redirect to login page
-    if session["user_id"] == None: 
+    if not session["user_id"]: 
         error_message = "You must be logged in to access that page."
         return render_template("login.html", error=error_message)
     
@@ -147,13 +147,12 @@ def add_review():
 
     # Get book-id
     isbn = request.form.get("isbn")
-    book_id = db.execute(
-        "SELECT id FROM books WHERE isbn=:isbn", {"isbn": isbn}).fetchone()
+    book_id = db.execute("SELECT id FROM books WHERE isbn=:isbn", {"isbn": isbn}).fetchone()
+    
     # Get current date and time
     now = datetime.now()
 
-    print(
-        f"Your rating was created on {now} for book #{book_id['id']} with ISBN:{isbn} is {rating} and your review is // {review} //")
+    print(f"Your rating was created on {now} for book #{book_id['id']} with ISBN:{isbn} is {rating} and your review is // {review} //")
     
     # Add rating & review to database
     db.execute("INSERT INTO reviews (book_id, user_id, rating, review, created_on) VALUES (:book_id, :user_id, :rating, :review, :created_on)", {"book_id" : book_id["id"], "user_id" : session["user_id"], "rating" : rating, "review" : review, "created_on": now})
@@ -176,12 +175,8 @@ def search():
     # Find similar books in database
     books = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE :keyword OR LOWER(author) LIKE :keyword OR isbn=:keyword",
                        {"keyword": keyword.lower()}).fetchall()
-    print(books)
-    if len(books) == 0:
-        error_message="No books were found. Please try a different keyword."
-        return render_template("list.html", error=error_message)
-    else:
-        return render_template("list.html", books=books)
+
+    return render_template("list.html", books=books, search_true=True, user_id=session["user_id"])
 
 
 # --------------- BOOK DETAILS --------------- #
@@ -192,8 +187,19 @@ def book():
     isbn = request.args.get("isbn")
 
     # Find book in database
-    book = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn = :isbn", {
+    book = db.execute("SELECT id, isbn, title, author, year FROM books WHERE isbn = :isbn", {
                       "isbn": isbn}).fetchone()
+
+    # Get book reviews from database
+    book_reviews = db.execute("SELECT user_id, review, rating, created_on FROM reviews WHERE book_id = :book_id", {"book_id": book["id"]}).fetchall()
+    print(book_reviews)
+
+    # Check whether user already has submitted a review
+    user_id = session["user_id"]
+    review_exists = False
+    for review in book_reviews:
+        if user_id == review["user_id"]:
+            review_exists = True
 
     # Retrieve ratings count and average rating from Goodreads API
     res = requests.get("https://www.goodreads.com/book/review_counts.json",
@@ -214,7 +220,7 @@ def book():
     }
 
     # Display book information on website
-    return render_template("book.html", book=book)
+    return render_template("book.html", book=book, reviews=book_reviews, review_exists=review_exists, user_id=user_id)
 
 
 # --------------- API: BOOK INFO --------------- #
@@ -226,6 +232,9 @@ def get_book(isbn):
     # Find book in database
     book = db.execute("SELECT isbn, title, author, year FROM books WHERE isbn = :isbn", {
                       "isbn": isbn}).fetchone()
+
+    if not book: 
+        return jsonify(404)
 
     # Retrieve ratings count and average rating from Goodreads API
     res = requests.get("https://www.goodreads.com/book/review_counts.json",
