@@ -2,6 +2,7 @@
 
 import os
 import requests
+import math
 from datetime import datetime
 from flask import Flask, url_for, session, render_template, request, jsonify, redirect
 from flask_session import Session
@@ -62,10 +63,11 @@ def register():
         
         # Create user in database, create new session and re-direct user to list
         else:
-            new_user = db.execute("INSERT INTO users (email, password) VALUES (:email, :password)", {"email": email, "password": password})
+            db.execute("INSERT INTO users (email, password) VALUES (:email, :password)", {"email": email, "password": password})
             db.commit()
-            print(new_user.rowcount)
-            #session["user_id"] = new_user["id"]
+
+            new_user = db.execute("SELECT id FROM users WHERE email = :email", {"email": email}).fetchone()
+            session["user_id"] = new_user["id"]
             return redirect("/list")
 
 
@@ -120,16 +122,35 @@ def logout():
 @app.route("/list")
 def list():
 
+    # Get page from user or else default to page #1
+    page = request.args.get("page")
+    if not page:
+        page = 1
+    else:
+        page = int(page)
+
+    # Calculate total number of pages
+    page_limit = 20
+    offset = page * page_limit - 1
+
+    no_books = db.execute("SELECT COUNT(id) FROM books").fetchone()
+    print(no_books[0])
+
+    total_pages = no_books[0] / page_limit
+    print(total_pages)
+
     # If user is not logged in, redirect to login page
     if not session["user_id"]:
         error_message = "You must be logged in to access that page."
         return render_template("login.html", error=error_message)
 
     # Retrieve all books (limit = 20 books)
-    books = db.execute("SELECT isbn, title, author, year FROM books LIMIT 20").fetchall()
+
+    books = db.execute("SELECT isbn, title, author, year FROM books ORDER BY title OFFSET :offset ROWS LIMIT :limit", {"offset":offset, "limit":page_limit}).fetchall()
+    print(books)
 
     # Render a list of all books
-    return render_template("list.html", books=books, user_id=session["user_id"], search_true=False)
+    return render_template("list.html", books=books, user_id=session["user_id"], search_true=False, page=page, total_pages=int(total_pages))
 
 
 # --------------- SUBMIT REVIEW --------------- #
@@ -165,18 +186,24 @@ def add_review():
 
 @app.route("/search")
 def search():
+
     # Search based on title, isbn or author
     keyword = request.args.get("keyword")
     
     # Format the search keyword (except if numeric)
     if not keyword.isnumeric():
-        keyword = "%" + keyword + "%"
+        keyword_used = "%" + keyword + "%"
+    else:
+        keyword_used = keyword
 
-    # Find similar books in database
+    # Find similar books in database 
     books = db.execute("SELECT * FROM books WHERE LOWER(title) LIKE :keyword OR LOWER(author) LIKE :keyword OR isbn=:keyword",
-                       {"keyword": keyword.lower()}).fetchall()
+                       {"keyword": keyword_used.lower()}).fetchall()
 
-    return render_template("list.html", books=books, search_true=True, user_id=session["user_id"])
+    # Calculate total number of pages
+    no_books = db.execute("SELECT COUNT (id) FROM books WHERE LOWER(title) LIKE :keyword OR LOWER(author) LIKE :keyword OR isbn=:keyword", {"keyword": keyword_used.lower()}).fetchone()
+
+    return render_template("list.html", books=books, search_true=True, user_id=session["user_id"], keyword=keyword, no_books=no_books[0])
 
 
 # --------------- BOOK DETAILS --------------- #

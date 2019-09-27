@@ -6,16 +6,13 @@
 {% block body %}
 <div class="container">   
     <div style = "margin: 30px 30px 30px 300px" class="row">
-
-        <!-- Placeholder div -->
-        <div class="col-2"></div>
-
+        <div class="col-1"></div>
         <!-- Allow user to search books -->
-        <div class="col-8">
+        <div class="col-10">
             <form action="{{ url_for ('search') }}" class="form-inline">
                 <div class="row">
                     <div class="from-group">
-                        <input class="form-control" type="search" name="keyword" placeholder="Search for books here">
+                        <input class="form-control" type="search" name="keyword" placeholder="Search for books here" value="{{keyword}}">
                         <button style="background-color:#43ab92; border-color:#43ab92; color:white" class="btn" type="submit">Search</button>
                     </div>
                     <div class="col"></div>
@@ -24,11 +21,27 @@
                     <div class="col"><button class="btn"><a href="{{ url_for ('list') }}">✖️ Clear search</a></button></div>
                     {% endif %}
                 </div>
-            </form>
+            </form>          
         </div>
-        
-        <!-- Placeholder div -->
-        <div class="col-2"></div>
+        <div class="col-1"></div>
+    </div>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-5" style="margin: 0px 0px 0px 15px">
+            <nav  aria-label="Page navigation example">
+                {% if search_true == False %}
+                <ul class="pagination">
+                    <li class="btn page-item"><a class="page-link" style="font-size: 12px; background-color:lightgrey; border-color:lightgrey; color:black" href="{{ url_for ('list') }}?page={{page-1}}">Previous</a></li>
+                    <li class="btn"><p style="font-size: 17px; color: grey;">{{page}}/{{total_pages}}</p></li>
+                    <li class="btn page-item"><a style="font-size: 12px; background-color:lightgrey; border-color:lightgrey; color:black" class="page-link" href="{{ url_for ('list') }}?page={{page+1}}">Next</a></li>
+                </ul>
+                {% else %}
+                <p>{{no_books}} search results</p>
+    
+                {% endif %}
+            </nav>
+        </div>
+        <div class="col-3"></div>
     </div>
     <div class="row">
         
