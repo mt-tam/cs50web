@@ -45,10 +45,13 @@
                 li.classList.add("list-group-item")
                 li.innerHTML = `${message.user} at ${message.time}:<br> ${message.content}`;
                 document.querySelector('#messages').append(li);
-                item.scrollTop = item.scrollHeight;
+                
+                // Scroll down to the latest message
+                const overflow = document.querySelector("#overflow")
+                overflow.scrollTop = overflow.scrollHeight;
             });
 
-            
+
         }
 
         // Add channel name to POST request
@@ -93,7 +96,9 @@
                 li.innerHTML = `${data.user} at ${data.time}: <br>${data.content}`;
                 document.querySelector('#messages').append(li);
                 
-                item.scrollTop = item.scrollHeight;
+                // Scroll down to the latest message
+                const overflow = document.querySelector("#overflow")
+                overflow.scrollTop = overflow.scrollHeight;
             });
         });
     });
@@ -119,11 +124,14 @@
 {% block Row2 %}
 
 <!-- Allow user to see existing messages -->
-<h3 style="margin: 50px 0 20px 0">Messages</h3>
-<div class="overflow-auto" style="height:300px; width: 500px" id="message_list" style="display:none">
-    <!-- Insert channels in the list below -->
-    <ul class="list-group" id="messages"></ul>
+<div id="message_list" style="display:none">
+    <h3 style="margin: 50px 0 20px 0">Messages</h3>
+    <div class="overflow-auto" style="height:500px; width: 500px" id="overflow">
+        <!-- Insert channels in the list below -->
+        <ul class=" list-group" id="messages"></ul>
+    </div>
 </div>
+
 
 <!-- Allow user to send new messages -->
 <h3 style="margin: 30px 0 20px 0">Send message</h3>

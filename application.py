@@ -53,7 +53,7 @@ def create_channel():
         "messages": [],
     }
     channels.append(channel)
-    print(f"Channel created: {channel['name']}")
+    print(f"Channel created: | {channel['name']} |")
     return ("200")
 
 
@@ -69,7 +69,7 @@ def channel_list():
 
 @app.route("/channel/<string:channel>")
 def show_channel(channel):
-    print(f"Current channel: {channel}")
+    print(f"Selected channel: | {channel} |")
 
     # Check if channel exists
     channel_exists = False
@@ -99,7 +99,7 @@ def message(data):
 
     # Find the right channel to add the message into
     channel = data["channel"].strip()
-    print(f"Received channel {channel}!")
+    print(f"Received message for channel | {channel} |")
 
     for i in channels:
 
@@ -116,7 +116,7 @@ def message(data):
             i['messages'].append(message)
             print("Message was succesfully added.")
         else:
-            print("Message wasn't added.")
+            print("Message could not be added.")
 
     # Debugging Print
     print(
@@ -138,9 +138,10 @@ def message_list():
             return jsonify(i["messages"])
         else:
             print("Channel was not found.")
-            return("error")
+            return(error)
 
 
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
+

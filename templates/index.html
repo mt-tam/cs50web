@@ -86,6 +86,7 @@
 
                 // Get value submitted by user
                 const channel = document.querySelector('#channel').value.trim();
+                console.log(channel);
 
                 // By default, channel is considered unique
                 let channel_unique = true;
@@ -95,7 +96,7 @@
 
                     // Stop the show if value provided is not unique
                     channel_list.forEach(item => {
-                        if (item === channel) {
+                        if (item.name == channel) {
                             document.querySelector("#error").innerHTML = "This channel already exists!";
                             channel_unique = false;
                         }
@@ -150,9 +151,9 @@
         <div class="form-group mx-sm-1">
             <input class="form-control form-control-lg" type="text" id="channel" Placeholder="New channel">
         </div>
-        <p style="color: red" id="error"></p>
         <button class="btn btn-primary btn-lg" type="submit">Submit</button>
     </form>
+    <p style="color: red" id="error"></p>
 </div>
 
 <!-- Allow user to see existing channels -->
