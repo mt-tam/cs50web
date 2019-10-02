@@ -1,100 +1,137 @@
-<html>
-    <head>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
-        <script>
-            document.addEventListener('DOMContentLoaded', () => {
-                
+{% extends "layout.html" %}
 
-                // -------------- FIND OR REMOVE LAST CHANNEL -------------- //
-                
-                // Save last viewed channel
-                let channel = document.querySelector('#selected_channel').innerHTML;
-                localStorage.setItem('last_channel', channel);
+{% block Script %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-                // Remove last viewed channel if clicking "Back"
-                document.querySelector('#back').onclick = () => {
-                    localStorage.setItem('last_channel', '');
-                }
+        // -------------------- SHOW DISPLAY NAME -------------------- //
 
-                // -------------- GET EXISTING MESSAGES -------------- //
-                
-                const request = new XMLHttpRequest();
-                request.open('POST', '/messages');
+        // Retrieve from local storage the display name and show it to the user
+        const display_name = localStorage.getItem('display_name');
+        document.querySelector('#logged_as').innerHTML = `Welcome, ${display_name}`;
 
-                // Callback function for when request completes
-                request.onload = () => {
 
-                    // Extract JSON data from request
-                    const data = JSON.parse(request.responseText);
-                    console.log(data);
+        // -------------- FIND OR REMOVE LAST CHANNEL -------------- //
 
-                    // Update the result div
-                    data.forEach(message => {
-                        console.log(message);
-                        const li = document.createElement('li');
-                        li.innerHTML = `${message.user} at ${message.time}: ${message.content}`;
-                        document.querySelector('#messages').append(li);
-                    });
-                }
-                   
+        // Save last viewed channel
+        let channel = document.querySelector('#selected_channel').innerHTML;
+        localStorage.setItem('last_channel', channel);
 
-                // Add channel name to POST request
-                const param = new FormData();
-                param.append('channel', channel);
+        // Remove last viewed channel if clicking "Back"
+        document.querySelector('#back').onclick = () => {
+            localStorage.setItem('last_channel', '');
+        }
 
-                // Send request
-                request.send(param);
+        // -------------- GET EXISTING MESSAGES -------------- //
 
-                
-                // -------------- SEND MESSAGE & GET BROADCASTED MESSAGES -------------- //
+        const request = new XMLHttpRequest();
+        request.open('POST', '/messages');
 
-                // Connect to websocket
-                var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+        // Callback function for when request completes
+        request.onload = () => {
 
-                // When connected, configure buttons
-                socket.on('connect', () => {
+            // Extract JSON data from request
+            const data = JSON.parse(request.responseText);
 
-                    // When form is submitted should emit a "message sent" event
-                    document.querySelector('#form').onsubmit = () => {
-                        const message = document.querySelector('#message').value;
-                        const user = localStorage.getItem('display_name');
-                        const channel = localStorage.getItem('last_channel');
-                        
-                        // Calculate today's date & time
-                        var today = new Date();
-                        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
-                        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
-                        var dateTime = date+' '+time;
+            const item = document.querySelector("#message_list");
+            if (data.length > 0) {
+                item.style.display = "block";
+            }
 
-                        socket.emit('message sent', {'message': message, 'user': user, "channel": channel, "datetime": dateTime})
-                        
-                        return false;
-                    };
-
-                    // When a new message is received, add to the unordered list
-                    socket.on('message received', data => {
-                        const li = document.createElement('li');
-                        li.innerHTML = `[NEW] ${data.user} at ${data.time}: ${data.content}`;
-                        document.querySelector('#messages').append(li);
-                    });
-                });
+            // Update the result div
+            data.forEach(message => {
+                console.log(message);
+                const li = document.createElement('li');
+                li.classList.add("list-group-item")
+                li.innerHTML = `${message.user} at ${message.time}:<br> ${message.content}`;
+                document.querySelector('#messages').append(li);
+                item.scrollTop = item.scrollHeight;
             });
+
             
-        </script>
+        }
 
-    </head>
-    <body>
-        <h1>Channel</h1>
-            <h2 id="selected_channel">{{channel}}</h2>
-        <a id="back" href="{{ url_for ('index') }}">Back</a>
+        // Add channel name to POST request
+        const param = new FormData();
+        param.append('channel', channel);
 
-        <br>
-        <h2>Send Message</h2>
-        <form id="form">
-            <input id="message" type="text" placeholder="Write a message">
-            <input type="submit" value="Send">
-        </form>
-        <h2>Messages</h2>
-        <ul id="messages"></ul>
-    </body>
-</html>
+        // Send request
+        request.send(param);
+
+
+        // -------------- SEND MESSAGE & GET BROADCASTED MESSAGES -------------- //
+
+        // Connect to websocket
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        // When connected, configure buttons
+        socket.on('connect', () => {
+
+            // When form is submitted should emit a "message sent" event
+            document.querySelector('#form').onsubmit = () => {
+                const message = document.querySelector('#message').value;
+                const user = localStorage.getItem('display_name');
+                const channel = localStorage.getItem('last_channel');
+
+                // Calculate today's date & time
+                var today = new Date();
+                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                var dateTime = date + ' ' + time;
+
+                socket.emit('message sent', { 'message': message, 'user': user, "channel": channel, "datetime": dateTime })
+                document.querySelector('#message').value = '';
+                return false;
+            };
+
+            // When a new message is received, add to the unordered list
+            socket.on('message received', data => {
+                const item = document.querySelector("#message_list")
+                item.style.display = "block";
+                const li = document.createElement('li');
+                li.classList.add("list-group-item");
+                li.innerHTML = `${data.user} at ${data.time}: <br>${data.content}`;
+                document.querySelector('#messages').append(li);
+                
+                item.scrollTop = item.scrollHeight;
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}
+
+{% block Row1 %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li style="font-size: 18px" class="breadcrumb-item"><a id="back" href="{{ url_for ('index') }}">Channels</a>
+        </li>
+        <li style="font-size: 18px" class="breadcrumb-item active" id="selected_channel" aria-current="page">{{channel}}
+        </li>
+    </ol>
+</nav>
+
+
+{% endblock %}
+
+
+{% block Row2 %}
+
+<!-- Allow user to see existing messages -->
+<h3 style="margin: 50px 0 20px 0">Messages</h3>
+<div class="overflow-auto" style="height:300px; width: 500px" id="message_list" style="display:none">
+    <!-- Insert channels in the list below -->
+    <ul class="list-group" id="messages"></ul>
+</div>
+
+<!-- Allow user to send new messages -->
+<h3 style="margin: 30px 0 20px 0">Send message</h3>
+<form id="form" class="form-inline">
+    <div class="form-group mx-sm-1">
+        <input class="form-control form-control-lg" type="text" id="message" Placeholder="Your message">
+    </div>
+    <button class="btn btn-primary btn-lg" type="submit">Send</button>
+</form>
+
+{% endblock %}
