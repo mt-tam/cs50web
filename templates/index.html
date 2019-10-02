@@ -8,7 +8,6 @@
         // If there is no display name in local storage
         if (!localStorage.getItem('display_name')) {
 
-
             // -------------------- ENTER DISPLAY NAME -------------------- //
 
             document.querySelector('#enter_name').style.display = "block";
@@ -35,13 +34,20 @@
                 window.location.href = "/channel/" + last_channel;
             }
 
-
             // -------------------- SHOW DISPLAY NAME -------------------- //
 
             // Retrieve from local storage the display name and show it to the user
             const display_name = localStorage.getItem('display_name');
-            document.querySelector('#logged_as').innerHTML = `Welcome, ${display_name}`;
+            document.querySelector('#logged_as').innerHTML = `Welcome, ${display_name} &nbsp<a id="remove_name" href="/"><img width=20px height=20px src="data:image/png;base64,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"></a>`;
 
+
+
+            // -------------------- REMOVE NAME IF CLICKED -------------------- //
+
+            document.querySelector('#remove_name').onclick = () => {
+                localStorage.setItem('display_name', '');
+                localStorage.setItem('last_channel', '');
+            }
 
 
             // -------------------- SHOW CHANNEL LIST -------------------- //
@@ -66,11 +72,18 @@
 
                         const link = document.createElement("a");
                         link.classList.add("list-group-item", "list-group-item-action");
+                        link.style.fontSize = 20;
                         link.href = `/channel/${channel.name}`;
-                        link.innerHTML = `${channel.name}`;
+                        link.innerHTML = `${channel.name} <span id="badge" data-channel='${channel.name}' style="text-align: right; background-color: #f66767; color:white" class="badge badge-light"></span>`;
                         document.querySelector("#channels").appendChild(link);
                     });
                 }
+
+                // Add local storage for each channel's new messages
+                channel_list.forEach(channel => {
+                    console.log(channel.name);
+                    localStorage.setItem(`${channel.name}`, "0");
+                })
             }
 
             // Send request
@@ -118,7 +131,40 @@
                     return false;
                 }
             }
+
+            // -------------- GET BROADCASTED MESSAGES & SHOW BADGE -------------- //
+
+            // Connect to websocket
+            var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+            // When connected
+            socket.on('connect', () => {
+
+                // When a new message is received, increment badge next to the right channel
+                socket.on('message received', data => {
+
+                    // Get channel from message
+                    const channel = data.channel;
+
+
+                    // Get list of badges to potentially update
+                    const badges = document.querySelectorAll("#badge");
+
+                    // Select the right badge to update
+                    badges.forEach(badge => {
+                        if (badge.dataset.channel == channel) {
+                            let new_messages = parseInt(localStorage.getItem(`${channel}`), 10) + 1;
+                            localStorage.setItem(`${channel}`, new_messages);
+                            console.log(new_messages);
+                            badge.innerHTML = `${new_messages} new`;
+                        }
+                    })
+                })
+            })
+
+
         }
+
     })
 
 </script>

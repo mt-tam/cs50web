@@ -7,7 +7,8 @@ Web Programming with Python and JavaScript
 This project allows users to send messages in public channels.
 
 # Personal Touch
-
+- Allow user to change display name.
+- While on the page, show user new messages on each channel.
 
 
 # Files HTML

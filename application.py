@@ -123,7 +123,8 @@ def message(data):
         f"User '{message['user']}' sent '{message['content']}' in channel '{channel}' at {message['time']}.")
 
     # Send last message back to all users
-    emit("message received", message, broadcast=True)
+    emit("message received", {"message":message, "channel":channel}, broadcast=True)
+
 
 
 # --------------- SEND MESSAGE LIST PER CHANNEL --------------- #
@@ -138,7 +139,7 @@ def message_list():
             return jsonify(i["messages"])
         else:
             print("Channel was not found.")
-            return(error)
+            return("error")
 
 
 
