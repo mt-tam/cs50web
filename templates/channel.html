@@ -1,0 +1,100 @@
+<html>
+    <head>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.6/socket.io.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                
+
+                // -------------- FIND OR REMOVE LAST CHANNEL -------------- //
+                
+                // Save last viewed channel
+                let channel = document.querySelector('#selected_channel').innerHTML;
+                localStorage.setItem('last_channel', channel);
+
+                // Remove last viewed channel if clicking "Back"
+                document.querySelector('#back').onclick = () => {
+                    localStorage.setItem('last_channel', '');
+                }
+
+                // -------------- GET EXISTING MESSAGES -------------- //
+                
+                const request = new XMLHttpRequest();
+                request.open('POST', '/messages');
+
+                // Callback function for when request completes
+                request.onload = () => {
+
+                    // Extract JSON data from request
+                    const data = JSON.parse(request.responseText);
+                    console.log(data);
+
+                    // Update the result div
+                    data.forEach(message => {
+                        console.log(message);
+                        const li = document.createElement('li');
+                        li.innerHTML = `${message.user} at ${message.time}: ${message.content}`;
+                        document.querySelector('#messages').append(li);
+                    });
+                }
+                   
+
+                // Add channel name to POST request
+                const param = new FormData();
+                param.append('channel', channel);
+
+                // Send request
+                request.send(param);
+
+                
+                // -------------- SEND MESSAGE & GET BROADCASTED MESSAGES -------------- //
+
+                // Connect to websocket
+                var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+                // When connected, configure buttons
+                socket.on('connect', () => {
+
+                    // When form is submitted should emit a "message sent" event
+                    document.querySelector('#form').onsubmit = () => {
+                        const message = document.querySelector('#message').value;
+                        const user = localStorage.getItem('display_name');
+                        const channel = localStorage.getItem('last_channel');
+                        
+                        // Calculate today's date & time
+                        var today = new Date();
+                        var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+                        var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                        var dateTime = date+' '+time;
+
+                        socket.emit('message sent', {'message': message, 'user': user, "channel": channel, "datetime": dateTime})
+                        
+                        return false;
+                    };
+
+                    // When a new message is received, add to the unordered list
+                    socket.on('message received', data => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `[NEW] ${data.user} at ${data.time}: ${data.content}`;
+                        document.querySelector('#messages').append(li);
+                    });
+                });
+            });
+            
+        </script>
+
+    </head>
+    <body>
+        <h1>Channel</h1>
+            <h2 id="selected_channel">{{channel}}</h2>
+        <a id="back" href="{{ url_for ('index') }}">Back</a>
+
+        <br>
+        <h2>Send Message</h2>
+        <form id="form">
+            <input id="message" type="text" placeholder="Write a message">
+            <input type="submit" value="Send">
+        </form>
+        <h2>Messages</h2>
+        <ul id="messages"></ul>
+    </body>
+</html>
