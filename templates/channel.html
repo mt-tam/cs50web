@@ -1,0 +1,145 @@
+{% extends "layout.html" %}
+
+{% block Script %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // -------------------- SHOW DISPLAY NAME -------------------- //
+
+        // Retrieve from local storage the display name and show it to the user
+        const display_name = localStorage.getItem('display_name');
+        document.querySelector('#logged_as').innerHTML = `Welcome, ${display_name}`;
+
+
+        // -------------- FIND OR REMOVE LAST CHANNEL -------------- //
+
+        // Save last viewed channel
+        let channel = document.querySelector('#selected_channel').innerHTML;
+        localStorage.setItem('last_channel', channel);
+
+        // Remove last viewed channel if clicking "Back"
+        document.querySelector('#back').onclick = () => {
+            localStorage.setItem('last_channel', '');
+        }
+
+        // -------------- GET EXISTING MESSAGES -------------- //
+
+        const request = new XMLHttpRequest();
+        request.open('POST', '/messages');
+
+        // Callback function for when request completes
+        request.onload = () => {
+
+            // Extract JSON data from request
+            const data = JSON.parse(request.responseText);
+
+            const item = document.querySelector("#message_list");
+            if (data.length > 0) {
+                item.style.display = "block";
+            }
+
+            // Update the result div
+            data.forEach(message => {
+                console.log(message);
+                const li = document.createElement('li');
+                li.classList.add("list-group-item")
+                li.innerHTML = `${message.user} at ${message.time}:<br> ${message.content}`;
+                document.querySelector('#messages').append(li);
+                
+                // Scroll down to the latest message
+                const overflow = document.querySelector("#overflow")
+                overflow.scrollTop = overflow.scrollHeight;
+            });
+
+
+        }
+
+        // Add channel name to POST request
+        const param = new FormData();
+        param.append('channel', channel);
+
+        // Send request
+        request.send(param);
+
+
+        // -------------- SEND MESSAGE & GET BROADCASTED MESSAGES -------------- //
+
+        // Connect to websocket
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        // When connected, configure buttons
+        socket.on('connect', () => {
+
+            // When form is submitted should emit a "message sent" event
+            document.querySelector('#form').onsubmit = () => {
+                const message = document.querySelector('#message').value;
+                const user = localStorage.getItem('display_name');
+                const channel = localStorage.getItem('last_channel');
+
+                // Calculate today's date & time
+                var today = new Date();
+                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                var dateTime = date + ' ' + time;
+
+                socket.emit('message sent', { 'message': message, 'user': user, "channel": channel, "datetime": dateTime })
+                document.querySelector('#message').value = '';
+                return false;
+            };
+
+            // When a new message is received, add to the unordered list
+            socket.on('message received', data => {
+                const item = document.querySelector("#message_list")
+                item.style.display = "block";
+                const li = document.createElement('li');
+                li.classList.add("list-group-item");
+                li.innerHTML = `${data.user} at ${data.time}: <br>${data.content}`;
+                document.querySelector('#messages').append(li);
+                
+                // Scroll down to the latest message
+                const overflow = document.querySelector("#overflow")
+                overflow.scrollTop = overflow.scrollHeight;
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}
+
+{% block Row1 %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li style="font-size: 18px" class="breadcrumb-item"><a id="back" href="{{ url_for ('index') }}">Channels</a>
+        </li>
+        <li style="font-size: 18px" class="breadcrumb-item active" id="selected_channel" aria-current="page">{{channel}}
+        </li>
+    </ol>
+</nav>
+
+
+{% endblock %}
+
+
+{% block Row2 %}
+
+<!-- Allow user to see existing messages -->
+<div id="message_list" style="display:none">
+    <h3 style="margin: 50px 0 20px 0">Messages</h3>
+    <div class="overflow-auto" style="height:500px; width: 500px" id="overflow">
+        <!-- Insert channels in the list below -->
+        <ul class=" list-group" id="messages"></ul>
+    </div>
+</div>
+
+
+<!-- Allow user to send new messages -->
+<h3 style="margin: 30px 0 20px 0">Send message</h3>
+<form id="form" class="form-inline">
+    <div class="form-group mx-sm-1">
+        <input class="form-control form-control-lg" type="text" id="message" Placeholder="Your message">
+    </div>
+    <button class="btn btn-primary btn-lg" type="submit">Send</button>
+</form>
+
+{% endblock %}
