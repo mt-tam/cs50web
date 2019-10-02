@@ -102,7 +102,14 @@ def message(data):
     for i in channels:
 
         # If channel exists, add the new message to the channel's messages
-        if channel == i["name"]: 
+        if channel == i["name"]:
+            
+            # Check if messages are over 100
+            if len(i['messages']) == 100:
+                # Remove oldest message from list
+                i['messages'].pop(0)    
+            
+            # Add latest message at the end of list
             i['messages'].append(message)
     
     # Debugging Print
@@ -124,8 +131,6 @@ def message_list():
         if channel == i["name"]:
             print(i["messages"])
             return jsonify(i["messages"])
-
-    # Need to check that each channel only contains max 100 messages
 
 
 if __name__ == '__main__':
