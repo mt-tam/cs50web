@@ -1,0 +1,152 @@
+{% extends "layout.html" %}
+
+{% block Script %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+
+        // -------------------- SHOW DISPLAY NAME -------------------- //
+
+        // Retrieve from local storage the display name and show it to the user
+        const display_name = localStorage.getItem('display_name');
+        document.querySelector('#logged_as').innerHTML = `Welcome, ${display_name} &nbsp<a id="remove_name" href="/"><img width=20px height=20px src="data:image/png;base64,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"></a>`;
+
+
+        // -------------------- REMOVE NAME IF CLICKED -------------------- //
+
+        document.querySelector('#remove_name').onclick = () => {
+            localStorage.setItem('display_name', '');
+            localStorage.setItem('last_channel', '');
+        }
+
+        // -------------- FIND OR REMOVE LAST CHANNEL -------------- //
+
+        // Save last viewed channel
+        let channel = document.querySelector('#selected_channel').innerHTML;
+        localStorage.setItem('last_channel', channel);
+
+        // Remove last viewed channel if clicking "Back"
+        document.querySelector('#back').onclick = () => {
+            localStorage.setItem('last_channel', '');
+        }
+
+        // -------------- GET EXISTING MESSAGES -------------- //
+
+        const request = new XMLHttpRequest();
+        request.open('POST', '/messages');
+
+        // Callback function for when request completes
+        request.onload = () => {
+
+            // Extract JSON data from request
+            const data = JSON.parse(request.responseText);
+
+            const item = document.querySelector("#message_list");
+            if (data.length > 0) {
+                item.style.display = "block";
+            }
+
+            // Update the result div
+            data.forEach(message => {
+                console.log(message);
+                const li = document.createElement('li');
+                li.classList.add("list-group-item")
+                li.innerHTML = `<p style="font-weight:bold">${message.user} <small> at ${message.time}</small></p> ${message.content}`;
+                document.querySelector('#messages').append(li);
+
+                // Scroll down to the latest message
+                const overflow = document.querySelector("#overflow")
+                overflow.scrollTop = overflow.scrollHeight;
+            });
+
+
+        }
+
+        // Add channel name to POST request
+        const param = new FormData();
+        param.append('channel', channel);
+
+        // Send request
+        request.send(param);
+
+
+        // -------------- SEND MESSAGE & GET BROADCASTED MESSAGES -------------- //
+
+        // Connect to websocket
+        var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port);
+
+        // When connected, configure buttons
+        socket.on('connect', () => {
+
+            // When form is submitted should emit a "message sent" event
+            document.querySelector('#form').onsubmit = () => {
+                const message = document.querySelector('#message').value;
+                const user = localStorage.getItem('display_name');
+                const channel = localStorage.getItem('last_channel');
+
+                // Calculate today's date & time
+                var today = new Date();
+                var date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                var time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+                var dateTime = date + ' ' + time;
+
+                socket.emit('message sent', { 'message': message, 'user': user, "channel": channel, "datetime": dateTime })
+                document.querySelector('#message').value = '';
+                return false;
+            };
+
+            // When a new message is received, add to the unordered list
+            socket.on('message received', data => {
+                const item = document.querySelector("#message_list")
+                item.style.display = "block";
+                const li = document.createElement('li');
+                li.classList.add("list-group-item");
+                li.innerHTML = `<p style="font-weight:bold">${data.message.user} <small> at ${data.message.time}</small></p> ${data.message.content}`;
+                document.querySelector('#messages').append(li);
+
+                // Scroll down to the latest message
+                const overflow = document.querySelector("#overflow")
+                overflow.scrollTop = overflow.scrollHeight;
+            });
+        });
+    });
+
+</script>
+
+{% endblock %}
+
+{% block Row1 %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li style="font-size: 18px" class="breadcrumb-item"><a id="back" href="{{ url_for ('index') }}">Channels</a>
+        </li>
+        <li style="font-size: 18px" class="breadcrumb-item active" id="selected_channel" aria-current="page">{{channel}}
+        </li>
+    </ol>
+</nav>
+
+
+{% endblock %}
+
+
+{% block Row2 %}
+
+<!-- Allow user to see existing messages -->
+<div id="message_list" style="display:none">
+    <h3 style="margin: 50px 0 20px 0">Messages</h3>
+    <div class="overflow-auto" style="height:500px; width: auto" id="overflow">
+        <!-- Insert channels in the list below -->
+        <ul class=" list-group" id="messages"></ul>
+    </div>
+</div>
+
+
+<!-- Allow user to send new messages -->
+<h3 style="margin: 30px 0 20px 0">Send message</h3>
+<form id="form" class="form-inline">
+    <div class="form-group mx-sm-1">
+        <input class="form-control form-control-lg" type="text" id="message" Placeholder="Your message">
+    </div>
+    <button class="btn btn-primary btn-lg" type="submit">Send</button>
+</form>
+
+{% endblock %}
