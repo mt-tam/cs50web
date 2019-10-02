@@ -1,158 +1,166 @@
-<html>
-    <head>
-        <script>         
-        document.addEventListener('DOMContentLoaded', () => {
-            var channel_list = [];
+{% extends "layout.html" %}
 
-            // If there is no display name in local storage
-            if (!localStorage.getItem('display_name')) {
+{% block Script %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        var channel_list = [];
+
+        // If there is no display name in local storage
+        if (!localStorage.getItem('display_name')) {
 
 
-                // -------------------- ENTER DISPLAY NAME -------------------- //
+            // -------------------- ENTER DISPLAY NAME -------------------- //
 
-                document.querySelector('#enter_name').style.display = "block";
+            document.querySelector('#enter_name').style.display = "block";
 
-                // Wait until the user has submitted a name
-                document.querySelector('#enter_name').onsubmit = () => {
+            // Wait until the user has submitted a name
+            document.querySelector('#enter_name').onsubmit = () => {
 
-                    // Get value submitted
-                    const name = document.querySelector('#name').value;
-                    
-                    // Store the display name in local storage
-                    localStorage.setItem('display_name', name);
-                }
+                // Get value submitted
+                const name = document.querySelector('#name').value;
+
+                // Store the display name in local storage
+                localStorage.setItem('display_name', name);
+            }
+        }
+
+        else {
+
+
+            // -------------------- REDIRECT TO LAST CHANNEL -------------------- //
+
+            const last_channel = localStorage.getItem('last_channel');
+
+            if (last_channel) {
+                window.location.href = "/channel/" + last_channel;
             }
 
-            else {
-                
 
-                // -------------------- REDIRECT TO LAST CHANNEL -------------------- //
+            // -------------------- SHOW DISPLAY NAME -------------------- //
 
-                const last_channel = localStorage.getItem('last_channel');
-                
-                if (last_channel) {
-                    window.location.href = "/channel/"+ last_channel;
-                }
+            // Retrieve from local storage the display name and show it to the user
+            const display_name = localStorage.getItem('display_name');
+            document.querySelector('#logged_as').innerHTML = `Welcome, ${display_name}`;
 
 
-                // -------------------- SHOW DISPLAY NAME -------------------- //
-            
-                document.querySelector('#display_name').style.display = "block";
-                
-                // Retrieve from local storage the display name and show it to the user
-                const display_name = localStorage.getItem('display_name');
-                document.querySelector('#display_name').childNodes[1].append(`Your display name is ${display_name}`);
 
-                
-                
-                // -------------------- SHOW CHANNEL LIST -------------------- //
+            // -------------------- SHOW CHANNEL LIST -------------------- //
 
-                document.querySelector('#channel_list').style.display = "block";
+            // Initialize new request
+            const get_list = new XMLHttpRequest();
+            get_list.open('GET', '/channel_list');
 
-                // Initialize new request
-                const get_list = new XMLHttpRequest();
-                get_list.open('GET', '/channel_list');
+            // Callback function for when request completes
+            get_list.onload = () => {
 
-                // Callback function for when request completes
-                get_list.onload = () => {
+                // Extract JSON data from request
+                channel_list = JSON.parse(get_list.responseText);
 
-                    // Extract JSON data from request
-                    channel_list = JSON.parse(get_list.responseText);
+                // Check if channels already exist
+                if (channel_list.length > 0) {
+                    document.querySelector('#channel_list').style.display = "block";
+
                     channel_list.forEach(channel => {
 
                         // Add each channel to the list and show it on the page (as a link)
-                        const item = document.createElement("li");
+
                         const link = document.createElement("a");
-                        item.appendChild(link); 
-                        link.href=`/channel/${channel.name}`;
+                        link.classList.add("list-group-item", "list-group-item-action");
+                        link.href = `/channel/${channel.name}`;
                         link.innerHTML = `${channel.name}`;
-                        document.querySelector("#channels").appendChild(item);
+                        document.querySelector("#channels").appendChild(link);
                     });
                 }
+            }
 
-                // Send request
-                get_list.send();
+            // Send request
+            get_list.send();
 
 
-                // -------------------- CREATE CHANNEL -------------------- //
+            // -------------------- CREATE CHANNEL -------------------- //
 
-                document.querySelector('#create_channel').style.display = "block";
+            document.querySelector('#create_channel').style.display = "block";
 
-                // Wait until the user has created a channel
-                document.querySelector('#create_channel').onsubmit = () => {
+            // Wait until the user has created a channel
+            document.querySelector('#create_channel').onsubmit = () => {
 
-                    // Get value submitted by user
-                    const channel = document.querySelector('#channel').value;
+                // Get value submitted by user
+                const channel = document.querySelector('#channel').value.trim();
+                console.log(channel);
 
-                    // By default, channel is considered unique
-                    let channel_unique = true;
+                // By default, channel is considered unique
+                let channel_unique = true;
 
-                    // Verify is channel is unique (if list contains at least one item)
-                    if (channel_list.length > 0) {
+                // Verify if channel is unique (if list contains at least one item)
+                if (channel_list.length > 0) {
 
-                        // Stop the show if value provided is not unique
-                        channel_list.forEach(item => {
-                            if (item === channel) {
-                                document.querySelector("#error").innerHTML = "This channel already exists!";
-                                channel_unique = false;
-                            }
-                        });
-                    }
-                    if (channel_unique == true) {
-                        // Initialize new request
-                        const request = new XMLHttpRequest();
-                        request.open('POST', '/create_channel');
+                    // Stop the show if value provided is not unique
+                    channel_list.forEach(item => {
+                        if (item.name == channel) {
+                            document.querySelector("#error").innerHTML = "This channel already exists!";
+                            channel_unique = false;
+                        }
+                    });
+                }
+                if (channel_unique == true) {
+                    // Initialize new request
+                    const request = new XMLHttpRequest();
+                    request.open('POST', '/create_channel');
 
-                        // Add data to send with request
-                        const data = new FormData();
-                        data.append('channel', channel);
+                    // Add data to send with request
+                    const data = new FormData();
+                    data.append('channel', channel);
 
-                        // Send request
-                        request.send(data);
-                    }
-                    else { 
-                        return false; 
-                    }
+                    // Send request
+                    request.send(data);
+                }
+                else {
+                    return false;
                 }
             }
-        })
+        }
+    })
 
-        </script>
-    </head>
-    <body>
-        <h1>My Chat Application</h1>
-        
-        <!-- Allow user to enter a display name, if none is found -->
-        <div id="enter_name" style="display:none">
-            <h3>Enter a display name:</h3>
-            <form>
-                <input type="text" id="name" Placeholder="Your name">
-                <input type="submit">
-            </form>
-        </div>
-        
-        <!-- Show display name, if user already has one -->
-        <div id="display_name" style="display:none">
-            <h3></h3>
-        </div>
+</script>
+{% endblock %}
 
-        <!-- Allow user to create a new channel -->
-        <div id="create_channel" style="display:none">
-            <h3>Enter a channel name:</h3>
-            <form>
-                <input type="text" id="channel" Placeholder="New channel">
-                <p style="color: red" id="error"></p>
-                <input type="submit">
-            </form>
+{% block Row1 %}
+<!-- Allow user to enter a display name, if none is found -->
+<div id="enter_name" style="display:none">
+    <h3 style="margin: 200px 0 20px 0">Enter a display name</h3>
+    <form class="form-inline">
+        <div class="form-group mx-sm-1">
+            <input class="form-control form-control-lg" type="text" id="name" Placeholder="Your name">
         </div>
+        <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+    </form>
+</div>
 
-        <!-- Allow user to see existing channels -->
-        <div id="channel_list" style="display:none">
-            <h3>Existing channels:</h3>
+<!-- Show display name, if user already has one -->
+<div id="display_name" style="display:none">
+    <h3 style="margin: 50px 0 20px 0"></h3>
+</div>
+{% endblock %}
 
-            <!-- Insert channels in the list below -->
-            <ul id="channels"></ul>
+
+{% block Row2 %}
+<!-- Allow user to create a new channel -->
+<div id="create_channel" style="display:none">
+    <h3 style="margin: 100px 0 20px 0">Create a channel</h3>
+    <form class="form-inline">
+        <div class="form-group mx-sm-1">
+            <input class="form-control form-control-lg" type="text" id="channel" Placeholder="New channel">
         </div>
-        
-    </body>
-</html>
+        <button class="btn btn-primary btn-lg" type="submit">Submit</button>
+    </form>
+    <p style="color: red" id="error"></p>
+</div>
+
+<!-- Allow user to see existing channels -->
+<div id="channel_list" style="display:none">
+    <h3 style="margin: 50px 0 20px 0">Existing channels</h3>
+
+    <!-- Insert channels in the list below -->
+    <ul class="list-group" id="channels"></ul>
+</div>
+{% endblock %}
