@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        
+    </head>
+    <body>
+        <h1>Step 3. MENU</h1>
+
+        <p>Here you can: </p>
+            <ul>
+                <li>View the list of products (OK)</li>
+                <li><a href="{% url 'logout' %}">Step 3.1 Log Out</a></li>
+                <li>Step 3.2 Select products (OK)</li>
+                <li>Step 3.2.1 Select toppings on relevant products (OK)</li>
+                <li>Step 3.2.2 Add product combo to shopping cart</li>
+                <li>Step 3.3.1 Continue shopping</li>
+                <li>Step 3.3.2 View shopping cart</li>
+
+            </ul>
+        
+        <!-- Show menu -->
+        <h1>MENU</h1>
+
+        <!-- Products -->
+        <div>
+            {% for type in product_types %}
+                <h3>{{type}}</h3>
+                <table>
+                    {% for product in products %}
+                        {% if product.type == type %}
+                        <tr>
+                            <td>{{product.name}}</td> 
+                            <td>${{product.price}}</td>
+                            <td><a href="{% url 'toppings' product.id %}">Buy</a></td>
+                        </tr>  
+                        {% endif %}
+                    {% endfor %}
+                </table>
+            {% endfor %}
+        </div>
+        
+        <!-- Toppings -->
+        <div>
+            <h3>Toppings</h3>
+            <table>
+                {% for topping in toppings %}
+                <tr><td>{{topping.name}}</td></tr>
+                {% endfor %}
+            </table>
+            
+        </div>     
+
+    </body>
+</html>

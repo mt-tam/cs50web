@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+        <h1>Available Toppings</h1>
+        
+        <!-- Show Max Toppings-->
+        {% if max_toppings == 0 %}
+        <p> No toppings can be chosen for this product.</p>
+
+        {% else %}
+        <p>You can choose up to {{max_toppings}} toppping(s).</p>
+     
+        <!-- Show List of Toppings -->
+        <div>
+            <h3>Toppings</h3>
+            <table>
+                {% for topping in toppings %}
+                <tr>
+                    <td>{{topping.name}}</td>
+                    <td><a href="select" >Select</a></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>     
+        {% endif %}
+    </body>
+</html>
