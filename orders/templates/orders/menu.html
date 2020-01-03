@@ -1,0 +1,26 @@
+{% extends "orders/base.html" %}
+
+<!-- Links Block-->
+{% block links %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+{% load static %}
+<script type="text/javascript" src="{% static 'get_data_menu.js' %}"></script>
+
+{% endblock %}
+
+
+
+<!-- Title Block -->
+{% block title %} Our Menu {% endblock %}
+
+
+<!-- Body Block -->
+{% block body %}
+<h5 style="margin:0 300px 0 300px; color:grey">Explore our offering and easily make an order by adding items to your shopping cart.</h5>
+
+<!-- Menu -->
+<div id="menu"></div>
+
+{% endblock %}}
+
