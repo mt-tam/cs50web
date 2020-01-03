@@ -1,17 +1,55 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        
-    </head>
-    <body>
-        <h1>Step 1. Home Page</h1>
 
-        <p>Here you can: </p>
-            <ul>
-                <li>View Store Info</li>
-                <li><a href="{% url 'signup' %}">Step 2.1 Signup</a></li>
-                <li><a href="{% url 'login' %}">Step 2.2 Login</a></li>
-                <li><a href="{% url 'menu' %}">Step 3. See Menu (after login or register)</a></li>
-            </ul>
-    </body>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    {% load static %}
+    <script type="text/javascript" src="{% static 'get_data_index.js' %}"></script>
+
+    <!-- Link to Bootstrap -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+</head>
+
+<body style="background-color:#f3f3f3">
+
+    <!-- NAVBAR -->
+    <nav style="background-color: #550a46" class="navbar sticky-top navbar-dark">
+        <!-- Show logo -->
+        <a class="navbar-brand" href="{% url 'index' %}">
+            <img src="https://image.flaticon.com/icons/svg/1293/1293171.svg" width="25" height="25">
+            Marius' Pizza Shop
+        </a>
+
+        <div class="form-inline">
+            <!-- Allow user to signup -->
+            <form action="{% url 'signup' %}">
+                <button class=" btn btn-light"
+                    style="margin-right: 15px; background-color:transparent; border-color:#fe9801; color:#fe9801"
+                    type="submit">Sign Up</button>
+            </form>
+
+            <!-- Allow user to login -->
+            <form action="{% url 'login' %}">
+                <button class=" btn btn-light"
+                    style="margin-right: 15px; background-color:#4a69bb; border-color:#4a69bb; color:white"
+                    type="submit">Log In</button>
+            </form>
+        </div>
+    </nav>
+
+    <!-- Title Block -->
+    <h1 style="margin:50px 300px 0 300px">Welcome to Marius' Pizza Parlour</h1>
+    <h5 style="margin:0 300px 0 300px; color:grey">Please find our menu below. Remember you must login to make an order.</h5>
+
+    <!-- Products -->
+    <div id="menu"></div>
+
+</body>
+
 </html>

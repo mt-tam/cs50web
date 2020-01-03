@@ -1,81 +1,120 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+import datetime
+from itertools import chain
+from django.core import serializers
+import simplejson as json
 
 # Database Models Used
 from .models import Product, Topping, Order
 
+# ------------------------------ FUNCTIONS ------------------------------ #
 
-### |------------------------------ 1. HOME PAGE ------------------------------|
+# Log system
+def log(message):
+    now = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
+    print(" <<!>> {0} ({1})\n".format(message, now))
+
+
+# ------------------------------ HOME PAGE ------------------------------ #
+
 
 def index(request):
+
+    # Log
+    log("Front page was accessed.")
+
+    # Load page
     return render(request, "orders/index.html")
 
 
-### |------------------------------ 2.1 SIGNUP ------------------------------|
-
-# Taken care by Django's built-in authentication views. BUT CANNOT FIND A WAY TO INCLUDE FIRST NAME; LAST NAME ; EMAIL IN THE REQUEST
-# Lives at /accounts/signup
-
-### |------------------------------ 2.2 LOGIN ------------------------------|
-
-# Taken care by Django's built-in authentication views.
-# Lives at /accounts/login
-
-### |------------------------------ 3.1 LOGOUT ------------------------------|
-
-# Taken care by Django's built-in authentication views.
-# Lives at /accounts/logout
+# ------------------------------ MENU ------------------------------ #
 
 
-### |------------------------------ 3. MENU ------------------------------|
 @login_required
 def menu(request):
-    
-    # Get list of all products
-    products = Product.objects.all()
-    print(products)
-    
-    # Get list of all product types
-    product_types_all = Product.objects.values('type')
+
+    # Log
+    log("Menu was accessed after login.")
+
+    # Load page
+    return render(request, "orders/menu.html", {"user": request.user})
+
+
+# ------------------------------ GET PRODUCT TYPES ------------------------------ #
+
+
+def get_product_types(request):
+
+    # Get list of all product types (list of dicts)
+    product_types_all = list(Product.objects.values('type'))
+
+    # Transform list of dicts into simple list with unique values
     product_types_unique = []
+    for dict in product_types_all:
+        if dict["type"] in product_types_unique:
+            continue
+        else:
+            product_types_unique.append(dict["type"])
 
-    for type in product_types_all:
-        for key, value in type.items():
-            if value in product_types_unique:
-                continue
-            else:
-                product_types_unique.append(value)
+    # Log
+    log("Product types were retrieved.")
 
-    print (product_types_unique)
+    # Return to page as JSON
+    return HttpResponse(json.dumps(product_types_unique))
+
+
+# ------------------------------ GET ALL PRODUCTS ------------------------------ #
+
+
+def get_products(request):
+
+    # Get list of all products
+    products = list(Product.objects.values("id", "name", "type", "size", "price"))
+
+    # Log
+    log("All Products were retrieved.")
+
+    # Return to web page as JSON
+    return HttpResponse(json.dumps(products))
+
+
+# ------------------------------ GET ALL TOPPINGS ------------------------------ #
+
+
+def get_toppings(request):
 
     # Get list of all toppings
-    toppings = Topping.objects.all()
+    toppings = list(Topping.objects.values("name", "price"))
 
-    context = {
-        "products": products,
-        "product_types" : product_types_unique,
-        "toppings": toppings,
-    }
-    print(context)
-    return render(request, "orders/menu.html", context)
+    # Log
+    log("All Toppings were retrieved.")
+
+    # Return to web page as JSON
+    return HttpResponse(json.dumps(toppings))
 
 
-### |------------------------------ 3.2.1 TOPPINGS ------------------------------|
+# ------------------------------ GET AVAILABLE TOPPINGS ------------------------------ #
 
-@login_required
-def toppings(request, product_id):
 
-    # Get the list of all allowed toppings for the selected product
-    toppings_available = Topping.objects.all().filter(products_available__id=product_id)
+def get_available_toppings(request, product_id):
 
-    # Get the number of toppings allowed for the selected product
+    # Get list of allowed toppings for selected product
+    toppings_available = list(Topping.objects.values(
+        'name', 'price').filter(products_available__id=product_id))
+
+    # Get number of toppings allowed for selected product
     max_toppings = Product.objects.get(id=product_id).max_toppings
 
-    # Return list of toppings and max number of toppings to user
+    # Return list of toppings and max number of toppings
     context = {
         "toppings": toppings_available,
         "max_toppings": max_toppings,
     }
-    
-    return render(request, "orders/toppings.html", context)
+
+    # Log
+    log("Available Toppings were retrieved.")
+
+    # Return to web page as JSON
+    return HttpResponse(json.dumps(context))

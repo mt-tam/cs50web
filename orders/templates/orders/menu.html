@@ -1,54 +1,26 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        
-    </head>
-    <body>
-        <h1>Step 3. MENU</h1>
+{% extends "orders/base.html" %}
 
-        <p>Here you can: </p>
-            <ul>
-                <li>View the list of products (OK)</li>
-                <li><a href="{% url 'logout' %}">Step 3.1 Log Out</a></li>
-                <li>Step 3.2 Select products (OK)</li>
-                <li>Step 3.2.1 Select toppings on relevant products (OK)</li>
-                <li>Step 3.2.2 Add product combo to shopping cart</li>
-                <li>Step 3.3.1 Continue shopping</li>
-                <li>Step 3.3.2 View shopping cart</li>
+<!-- Links Block-->
+{% block links %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-            </ul>
-        
-        <!-- Show menu -->
-        <h1>MENU</h1>
+{% load static %}
+<script type="text/javascript" src="{% static 'get_data_menu.js' %}"></script>
 
-        <!-- Products -->
-        <div>
-            {% for type in product_types %}
-                <h3>{{type}}</h3>
-                <table>
-                    {% for product in products %}
-                        {% if product.type == type %}
-                        <tr>
-                            <td>{{product.name}}</td> 
-                            <td>${{product.price}}</td>
-                            <td><a href="{% url 'toppings' product.id %}">Buy</a></td>
-                        </tr>  
-                        {% endif %}
-                    {% endfor %}
-                </table>
-            {% endfor %}
-        </div>
-        
-        <!-- Toppings -->
-        <div>
-            <h3>Toppings</h3>
-            <table>
-                {% for topping in toppings %}
-                <tr><td>{{topping.name}}</td></tr>
-                {% endfor %}
-            </table>
-            
-        </div>     
+{% endblock %}
 
-    </body>
-</html>
+
+
+<!-- Title Block -->
+{% block title %} Our Menu {% endblock %}
+
+
+<!-- Body Block -->
+{% block body %}
+<h5 style="margin:0 300px 0 300px; color:grey">Explore our offering and easily make an order by adding items to your shopping cart.</h5>
+
+<!-- Menu -->
+<div id="menu"></div>
+
+{% endblock %}}
+
