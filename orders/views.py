@@ -105,12 +105,15 @@ def get_available_toppings(request, product_id):
         'name', 'price').filter(products_available__id=product_id))
 
     # Get number of toppings allowed for selected product
-    max_toppings = Product.objects.get(id=product_id).max_toppings
+    product_requested = Product.objects.get(id=product_id)
+    max_toppings = product_requested.max_toppings
+    topping_included = product_requested.topping_included
 
     # Return list of toppings and max number of toppings
     context = {
         "toppings": toppings_available,
         "max_toppings": max_toppings,
+        "topping_included": topping_included,
     }
 
     # Log
@@ -118,3 +121,14 @@ def get_available_toppings(request, product_id):
 
     # Return to web page as JSON
     return HttpResponse(json.dumps(context))
+
+
+# ------------------------------ GET SUMMARY PRODUCT ------------------------------ #
+
+#def get_summary_product(request, product_id, toppings):
+    
+    # Get product chosen
+
+    # Get toppings chosen
+
+    # Compute total price

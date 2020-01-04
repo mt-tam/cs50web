@@ -6,6 +6,16 @@
 
 {% load static %}
 <script type="text/javascript" src="{% static 'get_data_menu.js' %}"></script>
+<script type="text/javascript" src="{% static 'shopping_cart.js' %}"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        window.setTimeout(get_data_menu, 0);
+        window.setTimeout(shopping_cart, 2000);
+    })
+</script>
+
+
 
 {% endblock %}
 
@@ -17,10 +27,27 @@
 
 <!-- Body Block -->
 {% block body %}
-<h5 style="margin:0 300px 0 300px; color:grey">Explore our offering and easily make an order by adding items to your shopping cart.</h5>
+<h5 style="margin:0 300px 0 300px; color:grey">Explore our offering and easily make an order by adding items to your
+    shopping cart.</h5>
+
+<div class="row" style="margin: 50px 300px 50px 300px">
+    <!-- Available Toppings -->
+    <div class="col">
+        <h5>Available Toppings</h5>
+        <ul id="available_toppings"></ul>
+    </div>
+
+
+    <!-- Shopping Cart -->
+    <div class="col">
+        <h5>Shopping Cart</h5>
+        <ul id="shopping_cart"></ul>
+    </div>
+</div>
+
+
 
 <!-- Menu -->
-<div id="menu"></div>
+<div id="menu" style="margin: 50px 300px 50px 300px"></div>
 
 {% endblock %}}
-

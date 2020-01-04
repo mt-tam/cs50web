@@ -1,5 +1,4 @@
-document.addEventListener('DOMContentLoaded', () => {
-
+function get_data_menu() {
 
     // -------------------- GET PRODUCT TYPES -------------------- //
 
@@ -19,7 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
         var menu = document.querySelector('#menu');
-        menu.setAttribute("style", "margin: 50px 300px 50px 300px")
 
         // Iterate through product types
         product_types.forEach(element => {
@@ -85,21 +83,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 price = "$" + element.price.toFixed(2);
                 label = element.type + " - " + element.name
                 id = element.id
-                console.log(id)
 
                 // If size is undefined (one size only) or small, then create new row
-                if (element.size == "undefined" || element.size == "small"){
-                    product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td>" + price + "<a style='margin:10px' href='" + id + "/get_available_toppings'><button class = 'btn' style='background-color:lightgrey'>Buy</button></a></td></tr>";
+                if (element.size == "undefined" || element.size == "small") {
+                    product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>";
                 }
                 // If size is large, then don't create a new row, add a new field on the same row instead
                 else {
                     // Manual exception for Subs - Sausage, Peppers & Onions to create a new row (since it only has Large value)
                     if (element.name == "Sausage, Peppers & Onions") {
-                        product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td></td><td>" + price + "<a style='margin:10px' href='" + id + "/get_available_toppings'><button class = 'btn' style='background-color:lightgrey'>Buy</button></a></td></tr>";
+                        product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td></td><td>" + price + "<button data-id='" + id + "'class = 'btn buy-btn'>Buy</button></td></tr>";
                     }
                     else {
                         product_row = document.querySelector("tr" + "[id=" + CSS.escape(label) + "]")
-                        product_row.innerHTML = product_row.innerHTML + "<td>" + price + "<a style='margin:10px' href='" + id + "/get_available_toppings'><button class = 'btn' style='background-color:lightgrey'>Buy</button></a></td></tr>";
+                        product_row.innerHTML = product_row.innerHTML + "<td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>";
                     }
 
                 }
@@ -113,8 +110,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Send request
     get_product_types.send();
-
-});
+    
+}
 
 
 

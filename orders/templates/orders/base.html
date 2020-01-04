@@ -12,6 +12,9 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
 
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
 </head>
 
 <body style="background-color:#f3f3f3">
@@ -24,14 +27,14 @@
             Marius' Pizza Shop
         </a>
 
-    <!-- Show user name and ID -->
-    <span class="navbar-brand mb-0">Welcome, {{user.first_name}} [#{{user.id}}]</span>
+        <!-- Show user name and ID -->
+        <span class="navbar-brand mb-0">Welcome, {{user.first_name}} [#{{user.id}}]</span>
 
-    <!-- Allow user to logout -->
-    <form action="{% url 'logout' %}">
-        <button style="background-color:#4a69bb; border-color:#4a69bb; color:white" class="btn btn-light"
-            type="submit">Logout</button>
-    </form>
+        <!-- Allow user to logout -->
+        <form action="{% url 'logout' %}">
+            <button style="background-color:#4a69bb; border-color:#4a69bb; color:white" class="btn btn-light"
+                type="submit">Logout</button>
+        </form>
     </nav>
 
     <!-- Title Block -->
