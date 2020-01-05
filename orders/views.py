@@ -71,7 +71,7 @@ def get_product_types(request):
 def get_products(request):
 
     # Get list of all products
-    products = list(Product.objects.values("id", "name", "type", "size", "price"))
+    products = list(Product.objects.values("id", "name", "type", "size", "price", "max_toppings"))
 
     # Log
     log("All Products were retrieved.")
@@ -102,7 +102,7 @@ def get_available_toppings(request, product_id):
 
     # Get list of allowed toppings for selected product
     toppings_available = list(Topping.objects.values(
-        'name', 'price').filter(products_available__id=product_id))
+       'id', 'name', 'price').filter(products_available__id=product_id))
 
     # Get number of toppings allowed for selected product
     product_requested = Product.objects.get(id=product_id)

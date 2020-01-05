@@ -62,8 +62,6 @@ function get_data_menu() {
 
         // --------------------GET PRODUCTS -------------------- //
 
-
-        // Initialize new request
         const get_products = new XMLHttpRequest();
         get_products.open('GET', '/get_products');
 
@@ -76,7 +74,7 @@ function get_data_menu() {
             // Iterate through each product
             products.forEach(element => {
 
-                // Find the relevant table based on product type
+                // Find the html table body based on product type
                 product_table = document.querySelector("table" + "[id=" + CSS.escape(element.type) + "]" + ">tbody")
 
                 // Transform data
@@ -84,13 +82,17 @@ function get_data_menu() {
                 label = element.type + " - " + element.name
                 id = element.id
 
+                // ------------------ ADD PRODUCTS IN TABLE ------------------ //
+
                 // If size is undefined (one size only) or small, then create new row
                 if (element.size == "undefined" || element.size == "small") {
                     product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>";
                 }
+                
                 // If size is large, then don't create a new row, add a new field on the same row instead
                 else {
-                    // Manual exception for Subs - Sausage, Peppers & Onions to create a new row (since it only has Large value)
+
+                    // Exception for Subs - Sausage, Peppers & Onions to create a new row (since it only has Large value)
                     if (element.name == "Sausage, Peppers & Onions") {
                         product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td></td><td>" + price + "<button data-id='" + id + "'class = 'btn buy-btn'>Buy</button></td></tr>";
                     }
@@ -98,19 +100,14 @@ function get_data_menu() {
                         product_row = document.querySelector("tr" + "[id=" + CSS.escape(label) + "]")
                         product_row.innerHTML = product_row.innerHTML + "<td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>";
                     }
-
                 }
-
             })
-
         }
         // Send request
         get_products.send();
-
     }
     // Send request
     get_product_types.send();
-    
 }
 
 
