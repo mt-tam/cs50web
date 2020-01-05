@@ -1,9 +1,11 @@
 function add_toppings() {
 
-    // Get all buy buttons
+    // Get all 'BUY' buttons
     buy_buttons = document.querySelectorAll('.buy-btn')
-    console.log(buy_buttons);
 
+    // Keep track of item id
+    var item_id = 0
+    var items = []
 
     // Trigger if any one of them is clicked
     buy_buttons.forEach(item => {
@@ -12,6 +14,9 @@ function add_toppings() {
             // Get product ID from clicked button
             var product_id = item.getAttribute('data-id');
 
+            // Keep track of products & toppings
+            item_id += 1
+            item_order = {}
 
             // ---------------- GET AVAILABLE TOPPINGS ----------------- //
 
@@ -56,19 +61,16 @@ function add_toppings() {
                 }
                 // Check when topping selections are updated
                 $('#available_toppings').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
-                    localStorage.clear()
 
                     // Get ids of toppings selected
                     topping_ids = $(this).val();
-                    console.log(topping_ids);
 
                     // Save product & topping IDs to local storage
-                    var item_order = {
+                    item_order = {
+                        'item_id': item_id,
                         'toppings': topping_ids,
                         'product': product_id,
                     }
-                    localStorage.setItem('item_order', JSON.stringify(item_order))
-                    console.log(JSON.parse(localStorage.getItem('item_order')))
 
                     // Check number of toppings selected
                     var nr_selections = $('li.selected').length
@@ -81,12 +83,35 @@ function add_toppings() {
                         console.log("Too many selections")
                         $('#save_button').attr("disabled", true);
                     }
+                    else {
+                        $('#save_button').attr("disabled", false);
+                    }
                 });
-            }
+            )   
             // Send request
             get_available_toppings.send();
 
+            // Log
+            console.log(">>> Successfully loaded toppings.");
 
+            // When user presses "Save", save item to local storage
+            $('#save_button').on('click', function () {
+                
+                // Check
+                console.log("Save button was clicked.")
+
+                // Reset local storage
+                localStorage.clear()
+
+                // Add new item to list of items
+                items.push(item_order)
+
+                // Push new list of items to local storage
+                localStorage.setItem('items', JSON.stringify(items))
+
+                // Print most updated local storage
+                console.log(JSON.parse(localStorage.getItem('items')))
+            })
         })
     })
 }

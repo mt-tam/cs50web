@@ -125,10 +125,12 @@ def get_available_toppings(request, product_id):
 
 # ------------------------------ GET SUMMARY PRODUCT ------------------------------ #
 
-#def get_summary_product(request, product_id, toppings):
+# def get_summary_product(request, product_id, toppings):
     
-    # Get product chosen
+    # Check product id & toppings exist in database
 
-    # Get toppings chosen
+    # Check that selected toppings are allowed with selected product 
 
-    # Compute total price
+    # Calculate the total price
+
+    # Send back information (id, names, price)
