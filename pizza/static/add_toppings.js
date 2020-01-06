@@ -18,7 +18,7 @@ function add_toppings() {
 
             // Get product ID from clicked button
             const product_id = item.getAttribute('data-id');
-            
+
             // Increment item id
             ++item_id
 
@@ -83,19 +83,21 @@ function add_toppings() {
                     // Log
                     console.log(">>> Successfully loaded toppings.");
 
+                    let item_order = {}
+
                     // Check when topping selections are updated [ ERROR IS SOMEWHERE BELOW !!! ]
                     $('#available_toppings').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
 
                         // Get ids of toppings selected
                         const topping_ids = $(this).val();
 
-                        // Save product & topping IDs to local storage
-                        const item_order = {
+                        // Create an item (of an order) to be potentially saved in local storage
+                        item_order = {
                             'item_id': item_id,
                             'toppings': topping_ids,
                             'product_id': product_id,
                         }
-                        
+
                         // LOGGING TO FIND OUT THE ERROR
                         console.log("--------------------")
                         console.log("-> Current item order:")
@@ -125,27 +127,24 @@ function add_toppings() {
                             $('#save_button').attr("disabled", false);
                         }
                     });
+
+                    // When user presses "Save", save item to local storage
+                    $('#save_button').on('click', function () {
+
+                        // Check
+                        console.log(">>>Save button was clicked.")
+
+                        // Reset local storage
+                        localStorage.clear()
+
+                        // Add new item to list of items
+                        items.push(item_order)
+
+                        // Push new list of items to local storage
+                        localStorage.setItem('items', JSON.stringify(items))
+
+                    })
                 });
-            /*
-    
-            // When user presses "Save", save item to local storage
-            $('#save_button').on('click', function () {
-    
-                // Check
-                console.log("Save button was clicked.")
-    
-                // Reset local storage
-                localStorage.clear()
-    
-                // Add new item to list of items
-                items.push(item_order)
-    
-                // Push new list of items to local storage
-                localStorage.setItem('items', JSON.stringify(items))
-    
-                // Print most updated local storage
-                console.log(JSON.parse(localStorage.getItem('items')))
-            })*/
         })
     })
 }
