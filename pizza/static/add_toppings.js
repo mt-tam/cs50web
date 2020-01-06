@@ -12,15 +12,19 @@ function add_toppings() {
     // Trigger if any one of them is clicked
     buy_buttons.forEach(item => {
         item.addEventListener('click', event => {
-            
+
             // Log
             console.log(">>> BUY button was clicked.")
 
             // Get product ID from clicked button
             const product_id = item.getAttribute('data-id');
-
+            
             // Increment item id
             ++item_id
+
+            // LOGS TO FIND THE CRAZY ERROR
+            console.log("You clicked on product #", product_id)
+            console.log("You are now at item #", item_id)
 
             // Open up toppings modal view
             $('#toppings-modal').modal('toggle');
@@ -79,7 +83,7 @@ function add_toppings() {
                     // Log
                     console.log(">>> Successfully loaded toppings.");
 
-                    // Check when topping selections are updated
+                    // Check when topping selections are updated [ ERROR IS SOMEWHERE BELOW !!! ]
                     $('#available_toppings').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
 
                         // Get ids of toppings selected
@@ -96,13 +100,13 @@ function add_toppings() {
                         console.log("--------------------")
                         console.log("-> Current item order:")
                         console.log(item_order)
-                        console.log("--------------------")
+                        console.log("<>")
 
                         // Check number of toppings selected
                         const nr_selections = $('li.selected').length
 
                         // LOGGING TO FIND OUT THE ERROR
-                        console.log("--------------------")
+                        console.log("<>")
                         console.log("-> Number of selections: #", nr_selections)
                         console.log("-> Max nr. of toppings allowed: #", max_toppings)
                         console.log("--------------------")
