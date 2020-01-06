@@ -2,8 +2,6 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 import datetime
-from itertools import chain
-from django.core import serializers
 import simplejson as json
 
 # Database Models Used

@@ -1,4 +1,4 @@
-function get_data_menu() {
+function get_data_menu(callback) {
 
     // -------------------- GET PRODUCT TYPES -------------------- //
 
@@ -88,7 +88,7 @@ function get_data_menu() {
                 if (element.size == "undefined" || element.size == "small") {
                     product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>";
                 }
-                
+
                 // If size is large, then don't create a new row, add a new field on the same row instead
                 else {
 
@@ -102,12 +102,18 @@ function get_data_menu() {
                     }
                 }
             })
+            // Callback
+            callback();
         }
+
+
         // Send request
         get_products.send();
     }
     // Send request
     get_product_types.send();
+
+
 }
 
 
