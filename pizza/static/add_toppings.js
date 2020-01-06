@@ -134,6 +134,15 @@ function add_toppings() {
                         // Check
                         console.log(">>>Save button was clicked.")
 
+                        // Notify user that a product was added
+                        let success_message = "<strong> Success ! </strong>" + "You have added product #" + item_order.product_id +" with "
+                        item_order.toppings.forEach(topping => {
+                            success_message = success_message + "topping #" + topping + " | "
+                        })
+
+                        $("#product-added-success-text").html(success_message)
+                        $("#product-added-success").css("display","block")
+
                         // Reset local storage
                         localStorage.clear()
 

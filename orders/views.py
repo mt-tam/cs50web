@@ -10,6 +10,8 @@ from .models import Product, Topping, Order
 # ------------------------------ FUNCTIONS ------------------------------ #
 
 # Log system
+
+
 def log(message):
     now = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
     print(" <<!>> {0} ({1})\n".format(message, now))
@@ -69,7 +71,8 @@ def get_product_types(request):
 def get_products(request):
 
     # Get list of all products
-    products = list(Product.objects.values("id", "name", "type", "size", "price", "max_toppings"))
+    products = list(Product.objects.values(
+        "id", "name", "type", "size", "price", "max_toppings"))
 
     # Log
     log("All Products were retrieved.")
@@ -100,7 +103,7 @@ def get_available_toppings(request, product_id):
 
     # Get list of allowed toppings for selected product
     toppings_available = list(Topping.objects.values(
-       'id', 'name', 'price').filter(products_available__id=product_id))
+        'id', 'name', 'price').filter(products_available__id=product_id))
 
     # Get number of toppings allowed for selected product
     product_requested = Product.objects.get(id=product_id)
@@ -123,11 +126,55 @@ def get_available_toppings(request, product_id):
 
 # ------------------------------ GET SUMMARY PRODUCT ------------------------------ #
 
-# def get_summary_product(request, product_id, toppings):
-    
-    # Check product id & toppings exist in database
+def get_summary_product(request):
 
-    # Check that selected toppings are allowed with selected product 
+    data = json.loads(request.body)
+    product_id = data["product_id"]
+    toppings_ids = data["toppings"]
+
+    print("Your product is #", product_id, "with toppings: ", toppings_ids)
+
+    # Get product information
+    product = Product.objects.get(id=product_id)
+    product_label = product.type + " - " + product.name
+    topping_included = product.topping_included
+
+    # Get topping information
+    toppings = []
+    for topping_id in toppings_ids:
+        
+        if topping_id != ",":
+            topping = Topping.objects.get(id=topping_id)
+            price = topping.price
+            if topping_included :
+                price = 0
+
+            topping_info = {
+                "topping_name": topping.name,
+                "topping_price": price,
+            }
+            toppings.append(topping_info)
+
+    # Compute total price
+    
+    
+
+    # Package information and send it back
+    response = {
+        "product_label" : product_label, 
+        "product_price" : product.price,
+        "product_size": product.size,
+        "topping_included" : topping_included,
+        "toppings" : toppings,
+    }
+
+    print(response)
+
+    return HttpResponse(json.dumps(response))
+
+
+# Check product id & toppings exist in database
+    # Check that selected toppings are allowed with selected product
 
     # Calculate the total price
 

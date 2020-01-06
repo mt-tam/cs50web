@@ -32,9 +32,15 @@
                 type="submit">Logout</button>
         </form>
     </nav>
-
-    <!-- Title Block -->
-    <h1 style="margin: 50px 300px 0 300px">{% block title %} {% endblock %} </h1>
+    
+    <!-- Alert -->
+    <div id="product-added-success" class="alert alert-success alert-dismissible fade show" role="alert"
+        style="display:none">
+        <p id="product-added-success-text"></p>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 
     <!-- Body Block -->
     {% block body %} {% endblock %}
