@@ -12,14 +12,8 @@ function add_toppings() {
     // Trigger if any one of them is clicked
     buy_buttons.forEach(item => {
         item.addEventListener('click', event => {
-
-            // Reset item_order
-            let item_order = {
-                "item_id": 0,
-                "toppings": [],
-                "product": 0,
-            }
-
+            
+            // Log
             console.log(">>> BUY button was clicked.")
 
             // Get product ID from clicked button
@@ -92,11 +86,13 @@ function add_toppings() {
                         const topping_ids = $(this).val();
 
                         // Save product & topping IDs to local storage
-                        item_order = {
+                        const item_order = {
                             'item_id': item_id,
                             'toppings': topping_ids,
                             'product_id': product_id,
                         }
+                        
+                        // LOGGING TO FIND OUT THE ERROR
                         console.log("--------------------")
                         console.log("-> Current item order:")
                         console.log(item_order)
@@ -105,6 +101,7 @@ function add_toppings() {
                         // Check number of toppings selected
                         const nr_selections = $('li.selected').length
 
+                        // LOGGING TO FIND OUT THE ERROR
                         console.log("--------------------")
                         console.log("-> Number of selections: #", nr_selections)
                         console.log("-> Max nr. of toppings allowed: #", max_toppings)
