@@ -17,8 +17,9 @@ function shopping_cart() {
             item.toppings.forEach(element => {
                 label = label + "-> topping #" + element +"<br>"
             });
-            label = label + "</li>" + "--------------------------"
             console.log(label)
+            label = label + "</li>" + "--------------------------"
+            
             
             // Add item to shopping cart
             s_cart.html(s_cart.html() + label) 

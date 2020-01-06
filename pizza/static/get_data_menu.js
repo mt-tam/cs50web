@@ -1,119 +1,93 @@
 function get_data_menu(callback) {
 
     // -------------------- GET PRODUCT TYPES -------------------- //
+    
+    fetch('/get_product_types')
+        .then(response => response.json())
+        .then(product_types => {
 
+            // -------------------- CREATE MENU STRUCTURE -------------------- //
 
-    // Initialize new request
-    const get_product_types = new XMLHttpRequest();
-    get_product_types.open('GET', '/get_product_types');
+            const menu = $('#menu');
 
-    // Callback function for when request completes
-    get_product_types.onload = () => {
+            // Iterate through product types
+            product_types.forEach(element => {
 
-        // Extract JSON data from request
-        product_types = JSON.parse(get_product_types.responseText);
+                // ------ CREATE ELEMENTS ------ //
 
+                // Create div for each product type
+                const div = $("<div id='" + element + "'></div")
 
-        // -------------------- CREATE MENU STRUCTURE -------------------- //
+                // Create header for each product type
+                const header = $("<h3>" + element + "</h3")
 
+                // Create table for each product type
+                const table = $("<table class='table table-sm' id='" + element + "'></table>")
 
-        var menu = document.querySelector('#menu');
-
-        // Iterate through product types
-        product_types.forEach(element => {
-
-            // ------ DIV ------ //
-
-            // Create div for each product type
-            type_div = document.createElement('div')
-            // Set ID value for each div
-            type_div.setAttribute("id", element);
-            // Add type div to menu div
-            menu.appendChild(type_div);
-
-            // ------ HEADER ------ //
-
-            // Create header for each product type
-            var header = document.createElement('h3');
-            // Add text for each header
-            header.innerHTML = element;
-            // Add header to type div
-            type_div.appendChild(header);
-
-            // ------ TABLE ------ //
-
-            // Create table for each product type
-            var table = document.createElement('table');
-            // Add class to table
-            table.classList.add("table", "table-sm");
-            // Add table headers
-            if (element == "Pasta" || element == "Salad") {
-                table.innerHTML = "<thead><tr><th style='width:60%'>Item</th><th style='width:40%'>Price</th></tr></thead><tbody></tbody>";
-            }
-            else {
-                table.innerHTML = "<thead><tr><th style='width:60%'>Item</th><th style='width:20%'>Small</th><th style='width:20%'>Large</th></tr></thead><tbody></tbody>";
-            }
-            // Set ID value for each table
-            table.setAttribute("id", element);
-            // Add table to type div
-            type_div.appendChild(table);
-        });
-
-
-        // --------------------GET PRODUCTS -------------------- //
-
-        const get_products = new XMLHttpRequest();
-        get_products.open('GET', '/get_products');
-
-        // Callback function for when request completes
-        get_products.onload = () => {
-
-            // Extract JSON data from request
-            products = JSON.parse(get_products.responseText);
-
-            // Iterate through each product
-            products.forEach(element => {
-
-                // Find the html table body based on product type
-                product_table = document.querySelector("table" + "[id=" + CSS.escape(element.type) + "]" + ">tbody")
-
-                // Transform data
-                price = "$" + element.price.toFixed(2);
-                label = element.type + " - " + element.name
-                id = element.id
-
-                // ------------------ ADD PRODUCTS IN TABLE ------------------ //
-
-                // If size is undefined (one size only) or small, then create new row
-                if (element.size == "undefined" || element.size == "small") {
-                    product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>";
+                // Create table headers
+                if (element == "Pasta" || element == "Salad") {
+                    table.html("<thead><tr><th style='width:60%'>Item</th><th style='width:40%'>Price</th></tr></thead><tbody></tbody>");
                 }
-
-                // If size is large, then don't create a new row, add a new field on the same row instead
                 else {
-
-                    // Exception for Subs - Sausage, Peppers & Onions to create a new row (since it only has Large value)
-                    if (element.name == "Sausage, Peppers & Onions") {
-                        product_table.innerHTML = product_table.innerHTML + "<tr id='" + label + "'><td>" + element.name + "</td><td></td><td>" + price + "<button data-id='" + id + "'class = 'btn buy-btn'>Buy</button></td></tr>";
-                    }
-                    else {
-                        product_row = document.querySelector("tr" + "[id=" + CSS.escape(label) + "]")
-                        product_row.innerHTML = product_row.innerHTML + "<td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>";
-                    }
+                    table.html("<thead><tr><th style='width:60%'>Item</th><th style='width:20%'>Small</th><th style='width:20%'>Large</th></tr></thead><tbody></tbody>")
                 }
-            })
-            // Callback
-            callback();
-        }
+
+                // ------ APPEND ELEMENTS ------ //
+
+                // Add type div to menu div
+                menu.append(div);
+
+                // Add header to type div
+                div.append(header);
+
+                // Add table to type div
+                div.append(table);
+
+            });
 
 
-        // Send request
-        get_products.send();
-    }
-    // Send request
-    get_product_types.send();
+            // --------------------GET PRODUCTS -------------------- //
 
+            fetch('/get_products')
+                .then(response => response.json())
+                .then(products => {
 
+                    // Iterate through each product
+                    products.forEach(element => {
+
+                        // Find the html table body based on product type
+                        product_table = $("table" + "[id=" + CSS.escape(element.type) + "]" + ">tbody")
+
+                        // Transform data
+                        const price = "$" + element.price.toFixed(2);
+                        const label = element.type + " - " + element.name
+                        const id = element.id
+
+                        // ------------------ ADD PRODUCTS IN TABLE ------------------ //
+
+                        // If size is undefined (one size only) or small, then create new row
+                        if (element.size == "undefined" || element.size == "small") {
+                            product_table.html(product_table.html() + "<tr id='" + label + "'><td>" + element.name + "</td><td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>");
+                        }
+
+                        // If size is large, then don't create a new row, add a new field on the same row instead
+                        else {
+
+                            // Exception for Subs - Sausage, Peppers & Onions to create a new row (since it only has Large value)
+                            if (element.name == "Sausage, Peppers & Onions") {
+                                product_table.html(product_table.html() + "<tr id='" + label + "'><td>" + element.name + "</td><td></td><td>" + price + "<button data-id='" + id + "'class = 'btn buy-btn'>Buy</button></td></tr>");
+                            }
+                            else {
+                                product_row = $("tr" + "[id=" + CSS.escape(label) + "]")
+                                product_row.html(product_row.html() + "<td>" + price + "<button data-id='" + id + "' class = 'btn buy-btn'>Buy</button></td></tr>");
+                            }
+                        }
+                    })
+
+                    // Callback
+                    callback();
+                })
+        })
 }
 
 
