@@ -24,15 +24,26 @@
         </a>
 
         <!-- Show user name and ID -->
-        <span class="navbar-brand mb-0">Welcome, {{user.first_name}} [#{{user.id}}]</span>
+        <span class="navbar-brand mb-0">Welcome, {{user.first_name}} ! <small>(Your customer ID is #{{user.id}})</small></span>
 
         <!-- Allow user to logout -->
-        <form action="{% url 'logout' %}">
-            <button style="background-color:#4a69bb; border-color:#4a69bb; color:white" class="btn btn-light"
-                type="submit">Logout</button>
+        <form class="form-inline" action="{% url 'logout' %}">
+            
+            <!-- Button trigger Cart Modal -->
+            <button style="margin:0 10px 0 10px" type="button" id="cart-button" class="btn btn-primary" data-toggle="modal"
+                data-target="#shopping-cart-modal">
+                🛒 Shopping Cart
+            </button>
+            
+            <!-- Button to logout -->
+            <button style="background-color:grey; border-color:grey; color:white" class="btn btn-primary"
+                type="submit">⭲ Logout</button>
+            
         </form>
+
+
     </nav>
-    
+
     <!-- Alert -->
     <div id="product-added-success" class="alert alert-success alert-dismissible fade show" role="alert"
         style="display:none">

@@ -24,7 +24,7 @@
 
     <div style="margin: 100px 150px; max-width: 800px">
     <h2 style="margin: 0 35px 0px">Sign up</h2>
-    <p style="margin: 15px 35px 35px; color:grey">If you already have account, <a href="{% url 'login'%}">Log In</a> here.</p>
+    <p style="margin: 15px 35px 35px; color:grey">If you already have account, <a href="{% url 'mylogin'%}">Log In</a> here.</p>
 
     <form action="{% url 'signup'%}" method="post">
       {% csrf_token %}

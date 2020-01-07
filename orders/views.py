@@ -132,22 +132,29 @@ def get_summary_product(request):
     product_id = data["product_id"]
     toppings_ids = data["toppings"]
 
-    print("Your product is #", product_id, "with toppings: ", toppings_ids)
+    # Log
+    log("You requested info on product #" +  product_id + " with toppings: " + str(toppings_ids))
 
     # Get product information
     product = Product.objects.get(id=product_id)
     product_label = product.type + " - " + product.name
     topping_included = product.topping_included
 
+    # Keep track of total price
+    total_price = product.price
+
     # Get topping information
     toppings = []
     for topping_id in toppings_ids:
-        
+
         if topping_id != ",":
             topping = Topping.objects.get(id=topping_id)
             price = topping.price
-            if topping_included :
+            if topping_included:
                 price = 0
+
+            # Compute total price
+            total_price += price
 
             topping_info = {
                 "topping_name": topping.name,
@@ -155,27 +162,14 @@ def get_summary_product(request):
             }
             toppings.append(topping_info)
 
-    # Compute total price
-    
-    
-
     # Package information and send it back
     response = {
-        "product_label" : product_label, 
-        "product_price" : product.price,
+        "product_label": product_label,
+        "product_price": product.price,
         "product_size": product.size,
-        "topping_included" : topping_included,
-        "toppings" : toppings,
+        "topping_included": topping_included,
+        "toppings": toppings,
+        "total_price": total_price,
     }
 
-    print(response)
-
     return HttpResponse(json.dumps(response))
-
-
-# Check product id & toppings exist in database
-    # Check that selected toppings are allowed with selected product
-
-    # Calculate the total price
-
-    # Send back information (id, names, price)

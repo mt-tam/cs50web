@@ -49,16 +49,6 @@
 <h5 style="margin:0 300px 0 300px; color:grey">Explore our offering and easily make an order by adding items to your
     shopping cart.</h5>
 
-<div class="row" style="margin: 50px 300px 50px 300px">
-    <div class="col">
-        <!-- Button trigger Cart Modal -->
-        <button type="button" id="cart-button" class="btn btn-primary" data-toggle="modal"
-            data-target="#shopping-cart-modal">
-            Shopping Cart
-        </button>
-    </div>
-</div>
-
 <!-- Menu -->
 <div id="menu" style="margin: 50px 300px 50px 300px"></div>
 
@@ -69,17 +59,23 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Shopping Cart</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">🛒 Shopping Cart</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
+                <p> Below you can find the items you ordered.</p><hr>
                 <ul id="shopping_cart"></ul>
+                <div style="background-color:lightgrey" class="row">
+                    <div style="height:70px" class="col"><br><strong> 🏷️ Total Price</strong></div>
+                    <div style="height:70px ; text-align:right; font-weight: bold" class ="col" id="cart_price"></div>
+
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Order</button>
+                <button type="button" class="btn btn-primary"> 🔔 Order</button>
             </div>
         </div>
     </div>
@@ -92,7 +88,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLongTitle">Toppings</h5>
+                <h5 class="modal-title" id="exampleModalLongTitle">🥩 Toppings</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -105,8 +101,8 @@
                 <p style="color:red ;margin:10px" id="error-toppings"></p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="submit" id="save_button" data-dismiss="modal" class="btn btn-primary">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"> Close</button>
+                <button type="submit" id="save_button" data-dismiss="modal" class="btn btn-primary"> ✔️ Save</button>
             </div>
         </div>
     </div>
