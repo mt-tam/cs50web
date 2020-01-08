@@ -14,4 +14,5 @@ urlpatterns = [
     path('get_toppings', views.get_toppings, name='get_toppings'),
     path('get_available_toppings/<int:product_id>', views.get_available_toppings, name='get_available_toppings'),
     path('get_summary_product', views.get_summary_product, name="get_summary_product"),
+    path('make_order', views.make_order, name="make_order"),
 ]

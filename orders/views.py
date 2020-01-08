@@ -128,12 +128,13 @@ def get_available_toppings(request, product_id):
 
 def get_summary_product(request):
 
-    data = json.loads(request.body)
-    product_id = data["product_id"]
-    toppings_ids = data["toppings"]
+    item = json.loads(request.body)
+    product_id = item["product_id"]
+    toppings_ids = item["toppings"]
 
     # Log
-    log("You requested info on product #" +  product_id + " with toppings: " + str(toppings_ids))
+    log("You requested info on product #" + product_id +
+        " with toppings: " + str(toppings_ids))
 
     # Get product information
     product = Product.objects.get(id=product_id)
@@ -173,3 +174,76 @@ def get_summary_product(request):
     }
 
     return HttpResponse(json.dumps(response))
+
+
+# ------------------------------ MAKE ORDER ------------------------------ #
+def make_order(request):
+
+    # Log
+    log("Make order was accessed.")
+
+    # Get current user
+    current_user = request.user
+    print("User ID: " + str(current_user))
+
+    # Find past orders
+    past_orders = list(Order.objects.values(
+        'order_id').filter(user_id=current_user))
+
+    # Find last order id
+    order_ids = []
+    for order in past_orders:
+        order_ids.append(order["order_id"])
+
+    # Compute next order id
+    order_id = max(order_ids) + 1
+    print("Order ID: " + str(order_id))
+
+    # Get list of items in order
+    items = json.loads(request.body)
+    print("-------------")
+    for item in items:
+
+        # Extract item id
+        print("Item ID: ", item["item_id"])
+        # Extract product id
+        product_id = item["product_id"]
+        print("Product ID: ", product_id)
+        # Extract toppings id
+        toppings = item["toppings"]
+        print("Topping IDs: " + str(toppings))
+        # Compute total price
+        item_price = 0
+
+        # Get product information
+        product = Product.objects.get(id=product_id)
+        topping_included = product.topping_included
+        item_price += product.price
+
+        # Get toppings price
+        for topping_id in toppings:
+
+            # Get topping information
+            topping = Topping.objects.get(id=topping_id)
+            price = topping.price
+
+            # If toppings are included, cancel price
+            if topping_included:
+                price = 0
+
+            # Compute total price
+            item_price += price
+
+        print("Item Price: ", item_price)
+        print("-------------")
+
+    # Write in database
+
+    # -> order_id
+    # -> item_id = models.IntegerField()
+    # -> product_id = models.ForeignKey(Product, related_name="products_orders", on_delete=models.SET("Product was not found"))
+    # -> toppings_selected = models.ManyToManyField(Topping, related_name="toppings")
+    # -> total_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    # -> user_id
+
+    return HttpResponse(json.dumps(order_id))

@@ -22,7 +22,8 @@ class Topping(models.Model):
 
 
 class Order(models.Model):
-    order_number = models.IntegerField()
+    order_id = models.IntegerField()
+    item_id = models.IntegerField()
     product_id = models.ForeignKey(Product, related_name="products_orders", on_delete=models.SET("Product was not found"))
     toppings_selected = models.ManyToManyField(Topping, related_name="toppings")
     total_cost = models.DecimalField(max_digits=10, decimal_places=2)
@@ -30,4 +31,4 @@ class Order(models.Model):
     user_id = models.ForeignKey(User, related_name="users", on_delete=models.SET("User was not found"))
 
     def __str__(self):
-        return f"Order #{self.order_number} by {self.user_id.email} for ${self.total_cost}."
+        return f"Order #{self.order_id} by {self.user_id.email} for ${self.total_cost}."

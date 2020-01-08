@@ -38,12 +38,14 @@ function shopping_cart() {
 
             // Send request to server and get back all info
             fetch('/get_summary_product', options)
-                .then((response) => response.json())
-                .then((data) => {
+                .then(response => response.json())
+                .then(data => {
 
                     // Add item price to total price of cart
                     cart_price += data.total_price
-                    $('#cart_price').html("<br>$" + Math.round(cart_price))
+                    console.log(cart_price)
+                    console.log(cart_price.toFixed(2))
+                    $('#cart_price').html("<br>$" + cart_price.toFixed(2))
 
                     // Create the right html
                     let label = "<strong> Item #" + item.item_id + "</strong> - $" + data.total_price + "<br>" + data.product_label + " (" + data.product_size + ") - $" + data.product_price + "<br> + toppings:<br><ul>"
