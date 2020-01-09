@@ -31,4 +31,4 @@ class Order(models.Model):
     user_id = models.ForeignKey(User, related_name="users", on_delete=models.SET("User was not found"))
 
     def __str__(self):
-        return f"Order #{self.order_id} by {self.user_id.email} for ${self.total_cost}."
+        return f"Order #{self.order_id}: Item # {self.item_id} by {self.user_id.email} for ${self.total_cost}."

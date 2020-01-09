@@ -28,7 +28,7 @@
 
     <form action="{% url 'signup'%}" method="post">
       {% csrf_token %}
-      <div class="col" style="margin:20px"><input class="form-control" name="first_name" type="text"
+      <div class="col" style="margin:20px"><input autofocus class="form-control" name="first_name" type="text"
           placeholder="First Name"></div>
       <div class="col" style="margin:20px"><input class="form-control" name="last_name" type="text"
           placeholder="Last Name"></div>

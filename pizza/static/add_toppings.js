@@ -1,72 +1,58 @@
 function add_toppings() {
 
-    // Get all 'BUY' buttons
-    const buy_buttons = document.querySelectorAll('.buy-btn')
-    console.log(">>> Toppings function was triggered.")
-
-    // Keep track of selected items (& increment item_id)
-    let items = []
+    // Keep track of item ID 
     let item_id = 0
 
+    let product_id;
 
-    // Trigger if any one of them is clicked
-    buy_buttons.forEach(item => {
-        item.addEventListener('click', event => {
+    // ----------- ON 'CLICKING' ANY BUY BUTTON----------- //
 
-            // Log
-            console.log(">>> BUY button was clicked.")
+    $('.buy-btn').each(function () {
+        $(this).on('click', function () {
 
-            // Get product ID from clicked button
-            const product_id = item.getAttribute('data-id');
+            // Get product ID 
+            product_id = parseInt($(this).attr('data-id'));
 
-            // Increment item id
+            // Increment item ID
             ++item_id
 
-            // LOGS TO FIND THE CRAZY ERROR
-            console.log("You clicked on product #", product_id)
-            console.log("You are now at item #", item_id)
-
-            // Open up toppings modal view
+            // Open up toppings view
             $('#toppings-modal').modal('toggle');
 
             // Keep track of toppings header text and list of toppings
             const toppings_text = $("#toppings-text");
             const toppings_options = $("#available_toppings");
 
-            // Reset list of toppings & error message
+            // Reset list of options
             toppings_options.html("")
-            $('#error-toppings').html("")
 
 
             // ---------------- GET AVAILABLE TOPPINGS ----------------- //
 
-            // Initialize new request
             fetch('/get_available_toppings/' + product_id)
                 .then(response => response.json())
                 .then(response => {
 
-                    // Extract data from server response
+                    // Extract data
                     const available_toppings = response.toppings; // list of toppings
                     const max_toppings = response.max_toppings; // max number of toppings
                     const topping_included = response.topping_included; // boolean (yes/no)
 
-                    // Create toppings view
+                    // Keep track of selected toppings, if any
+                    let topping_ids;
 
+                    // If no toppings allowed, don't even bother
                     if (max_toppings == 0) {
-
-                        // If no topping allowed then tell the user
                         toppings_text.html("No toppings allowed.")
-                    }
-                    else {
+                        topping_ids = "";
 
-                        // Show user max number of toppings
+                    } else {
+                        // Show max number of toppings & if toppings are included or not
                         toppings_text.html("You can select up to " + max_toppings + " toppings,")
-
-                        // Show user if toppings are included in the price
                         const included = topping_included ? " included in the price" : " not included in the price"
                         toppings_text.html(toppings_text.html() + included)
 
-                        // Generate available toppings
+                        // Generate list of available toppings
                         available_toppings.forEach(topping => {
 
                             // Show price only if toppings are not included
@@ -78,82 +64,77 @@ function add_toppings() {
                             // Refresh multiple select list to contain all newly added values
                             $('.selectpicker').selectpicker('refresh');
                         })
-
                     }
-                    // Log
-                    console.log(">>> Successfully loaded toppings.");
+                    // ----------- ON "CHANGING" TOPPING OPTIONS ----------- //
 
-                    let item_order = {}
-
-                    // Check when topping selections are updated [ ERROR IS SOMEWHERE BELOW !!! ]
                     $('#available_toppings').on('changed.bs.select', function (e, clickedIndex, isSelected, previousValue) {
 
-                        // Get ids of toppings selected
-                        const topping_ids = $(this).val();
-
-                        // Create an item (of an order) to be potentially saved in local storage
-                        item_order = {
-                            'item_id': item_id,
-                            'toppings': topping_ids,
-                            'product_id': product_id,
-                        }
-
-                        // LOGGING TO FIND OUT THE ERROR
-                        console.log("--------------------")
-                        console.log("-> Current item order:")
-                        console.log(item_order)
-                        console.log("<>")
+                        // Get IDs of toppings selected & convert them to Integers
+                        topping_ids = $(this).val();
+                        topping_ids = topping_ids.map(n => parseInt(n))
 
                         // Check number of toppings selected
                         const nr_selections = $('li.selected').length
+                        console.log("You selected : " + nr_selections + " toppings.")
 
-                        // LOGGING TO FIND OUT THE ERROR
-                        console.log("<>")
-                        console.log("-> Number of selections: #", nr_selections)
-                        console.log("-> Max nr. of toppings allowed: #", max_toppings)
-                        console.log("--------------------")
+                        // Number of toppings allowed
+                        console.log("You're allowed to : " + response.max_toppings + " toppings.")
 
-                        // Show error message if too many are selected
+                        /* Show error message if too many are selected
                         if (nr_selections > max_toppings) {
                             console.log("Too many selections")
-
+                    
                             $('#error-toppings').html('You have selected more than ' + max_toppings + ' toppings.')
-
+                    
                             // Disable saving
                             $('#save_button').attr("disabled", true);
                         }
                         else {
                             // Allow saving
                             $('#save_button').attr("disabled", false);
-                        }
+                        }*/
                     });
 
-                    // When user presses "Save", save item to local storage
+                    let count = 0
+
+                    // ------------- ON 'CLICKING' SAVE (TOPPINGS) BUTTON ------------- //
+
                     $('#save_button').on('click', function () {
 
-                        // Check
-                        console.log(">>>Save button was clicked.")
+                        // Log // Error when save is clicked with two products it simulates two clicks instead of one
+                        count++
+                        console.log(">>> ERROR: Save button was clicked " + count + " times.")
 
-                        // Notify user that a product was added
-                        let success_message = "<strong> Success ! </strong>" + "You have added product #" + item_order.product_id +" with "
-                        item_order.toppings.forEach(topping => {
-                            success_message = success_message + "topping #" + topping + " | "
-                        })
+                        // -------------- SAVE IN LOCAL STORAGE -------------//
 
-                        $("#product-added-success-text").html(success_message)
-                        $("#product-added-success").css("display","block")
-
-                        // Reset local storage
-                        localStorage.clear()
-
-                        // Add new item to list of items
-                        items.push(item_order)
+                        // Create the new item
+                        let item_order = {
+                            item_id: item_id,
+                            toppings: topping_ids,
+                            product_id: product_id,
+                        }
+                        console.log("New item saved is: ", item_order)
 
                         // Push new list of items to local storage
-                        localStorage.setItem('items', JSON.stringify(items))
+                        localStorage.setItem(item_id, JSON.stringify(item_order))
+
+                        // -------------- NOTIFICATION FOR USER ------------- //
+
+                        let success_message = "<strong> Success ! </strong>" + "You have added product #" + item_order.product_id
+
+                        // If there are toppings involved, show them too
+                        if (topping_ids != null) {
+                            success_message += " with "
+                            for (var i = 0; i < topping_ids.length; i++) {
+                                success_message = success_message + "topping #" + topping_ids[i] + " | ";
+                            }
+                        }
+                        $("#product-added-success-text").html(success_message)
+                        $("#product-added-success").css("display", "block")
 
                     })
-                });
+                })
+
         })
     })
 }

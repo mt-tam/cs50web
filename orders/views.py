@@ -133,7 +133,7 @@ def get_summary_product(request):
     toppings_ids = item["toppings"]
 
     # Log
-    log("You requested info on product #" + product_id +
+    log("You requested info on product #" + str(product_id) +
         " with toppings: " + str(toppings_ids))
 
     # Get product information
@@ -202,30 +202,40 @@ def make_order(request):
     # Get list of items in order
     items = json.loads(request.body)
     print("-------------")
-    for item in items:
 
+    for item in items:
         # Extract item id
-        print("Item ID: ", item["item_id"])
+        item_id = item["item_id"]
+        print("Item ID: ", item_id)
         # Extract product id
         product_id = item["product_id"]
         print("Product ID: ", product_id)
         # Extract toppings id
         toppings = item["toppings"]
         print("Topping IDs: " + str(toppings))
-        # Compute total price
-        item_price = 0
 
         # Get product information
         product = Product.objects.get(id=product_id)
         topping_included = product.topping_included
-        item_price += product.price
 
-        # Get toppings price
+        # Write in database
+        new_order = Order(order_id=order_id, item_id=item_id, product_id=Product.objects.get(
+            id=product_id), user_id=current_user, total_cost=0)
+        new_order.save()
+        print(new_order)
+
+        # Compute item price
+        item_price = 0
+        # Add product price
+        item_price += product.price
+        # Add toppings price
         for topping_id in toppings:
 
             # Get topping information
-            topping = Topping.objects.get(id=topping_id)
-            price = topping.price
+            t = Topping.objects.get(id=topping_id)
+            price = t.price
+
+            new_order.toppings_selected.add(t)
 
             # If toppings are included, cancel price
             if topping_included:
@@ -236,14 +246,7 @@ def make_order(request):
 
         print("Item Price: ", item_price)
         print("-------------")
-
-    # Write in database
-
-    # -> order_id
-    # -> item_id = models.IntegerField()
-    # -> product_id = models.ForeignKey(Product, related_name="products_orders", on_delete=models.SET("Product was not found"))
-    # -> toppings_selected = models.ManyToManyField(Topping, related_name="toppings")
-    # -> total_cost = models.DecimalField(max_digits=10, decimal_places=2)
-    # -> user_id
+        new_order.total_cost = item_price
+        new_order.save()
 
     return HttpResponse(json.dumps(order_id))
