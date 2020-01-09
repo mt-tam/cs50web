@@ -36,11 +36,15 @@ def mylogin(request):
             # A backend authenticated the credentials
             login(request, user)
 
+            context = {
+                "is_staff" : user.is_staff,
+            }
+
             # Log
             log("User was logged in: " + username)
 
             # Redirect to menu
-            return redirect(reverse("menu"))
+            return redirect(reverse('menu'))
         else:
 
             # Log
@@ -51,6 +55,7 @@ def mylogin(request):
                 "message": "Username or password are incorrect.. Please try again."
             }
             return render(request, "accounts/login.html", context)
+            
 
     else:
         # If GET request, show login page to user
@@ -107,3 +112,7 @@ def signup(request):
         # If GET request, show signup page to user
         log("Signup page was accessed.")
         return render(request, "accounts/signup.html")
+
+
+
+

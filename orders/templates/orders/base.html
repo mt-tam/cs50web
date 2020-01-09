@@ -18,7 +18,7 @@
     <!-- NAVBAR -->
     <nav style="background-color: #550a46" class="navbar sticky-top navbar-dark">
         <!-- Show logo -->
-        <a class="navbar-brand" href="{% url 'index' %}">
+        <a class="navbar-brand" href="{% url 'menu' %}">
             <img src="https://image.flaticon.com/icons/svg/1293/1293171.svg" width="25" height="25">
             Marius' Pizza Shop
         </a>
@@ -29,14 +29,26 @@
         <!-- Allow user to logout -->
         <form class="form-inline" action="{% url 'logout' %}">
             
+            {% if user.is_staff %}
+            <!-- Button trigger Admin page only if user IS STAFF -->
+            <a href='/admin'><button style="margin:0 0 0 10px; display:block" type="button" class="btn btn-secondary">
+                ⚙️ Admin
+            </button></a>
+            <!-- Button trigger Order page only if user IS STAFF -->
+            <a href="{% url 'orders' %}"><button style="margin:0 100px 0 10px; display:block" type="button" class="btn btn-secondary">
+                🧾 Orders
+            </button></a>
+            
+            {% endif %}
+
             <!-- Button trigger Cart Modal -->
-            <button style="margin:0 10px 0 10px" type="button" id="cart-button" class="btn btn-primary" data-toggle="modal"
+            <button style="margin:0 10px 0 0px" type="button" id="cart-button" class="btn btn-primary" data-toggle="modal"
                 data-target="#shopping-cart-modal">
                 🛒 Shopping Cart
             </button>
             
             <!-- Button to logout -->
-            <button style="background-color:grey; border-color:grey; color:white" class="btn btn-primary"
+            <button class="btn btn-secondary"
                 type="submit">⭲ Logout</button>
             
         </form>

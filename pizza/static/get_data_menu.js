@@ -4,22 +4,22 @@ function get_data_menu(callback) {
     
     fetch('/get_product_types')
         .then(response => response.json())
-        .then(product_types => {
+        .then(response => {
 
             // -------------------- CREATE MENU STRUCTURE -------------------- //
 
             const menu = $('#menu');
 
             // Iterate through product types
-            product_types.forEach(element => {
-
+            response.forEach(element => {
+                
                 // ------ CREATE ELEMENTS ------ //
 
                 // Create div for each product type
                 const div = $("<div id='" + element + "'></div")
 
                 // Create header for each product type
-                const header = $("<h3>" + element + "</h3")
+                const header = $("<h3>" + element + "</h3")  
 
                 // Create table for each product type
                 const table = $("<table class='table table-sm' id='" + element + "'></table>")
@@ -42,7 +42,6 @@ function get_data_menu(callback) {
 
                 // Add table to type div
                 div.append(table);
-
             });
 
 

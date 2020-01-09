@@ -1,20 +1,13 @@
+# Requirements
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 import datetime
 import simplejson as json
 
-# Database Models Used
+# Database Models
 from .models import Product, Topping, Order
-
-# ------------------------------ FUNCTIONS ------------------------------ #
-
-# Log system
-
-
-def log(message):
-    now = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
-    print(" <<!>> {0} ({1})\n".format(message, now))
+from django.contrib.auth.models import User
 
 
 # ------------------------------ HOME PAGE ------------------------------ #
@@ -29,6 +22,7 @@ def index(request):
     return render(request, "orders/index.html")
 
 
+
 # ------------------------------ MENU ------------------------------ #
 
 
@@ -40,6 +34,7 @@ def menu(request):
 
     # Load page
     return render(request, "orders/menu.html", {"user": request.user})
+
 
 
 # ------------------------------ GET PRODUCT TYPES ------------------------------ #
@@ -65,6 +60,7 @@ def get_product_types(request):
     return HttpResponse(json.dumps(product_types_unique))
 
 
+
 # ------------------------------ GET ALL PRODUCTS ------------------------------ #
 
 
@@ -81,6 +77,7 @@ def get_products(request):
     return HttpResponse(json.dumps(products))
 
 
+
 # ------------------------------ GET ALL TOPPINGS ------------------------------ #
 
 
@@ -94,6 +91,7 @@ def get_toppings(request):
 
     # Return to web page as JSON
     return HttpResponse(json.dumps(toppings))
+
 
 
 # ------------------------------ GET AVAILABLE TOPPINGS ------------------------------ #
@@ -124,7 +122,9 @@ def get_available_toppings(request, product_id):
     return HttpResponse(json.dumps(context))
 
 
+
 # ------------------------------ GET SUMMARY PRODUCT ------------------------------ #
+
 
 def get_summary_product(request):
 
@@ -176,7 +176,10 @@ def get_summary_product(request):
     return HttpResponse(json.dumps(response))
 
 
+
 # ------------------------------ MAKE ORDER ------------------------------ #
+
+
 def make_order(request):
 
     # Log
@@ -250,3 +253,162 @@ def make_order(request):
         new_order.save()
 
     return HttpResponse(json.dumps(order_id))
+
+
+
+# ------------------------------------ SHOW ORDERS ------------------------------------ #
+
+
+def orders(request):
+
+    return render(request, 'orders/orders.html')
+
+
+
+# ------------------------------------ GET ORDERS ------------------------------------ #
+
+
+def get_orders(request):
+
+    # Get all items in orders
+    orders = list(Order.objects.values('order_id'))
+    # Get all order IDs from database
+    order_ids = set()
+
+    for item in orders:
+        order_ids.add(item['order_id'])
+
+    # Repackage into a new list of orders
+    new_orders = []
+
+    # For each order, create a order package
+    for order_id in order_ids:
+
+        # Get current order
+        order = list(Order.objects.values('user_id','created_on').filter(order_id=order_id)[:1])[0]
+
+        # Compute total order cost
+        order_cost = 0
+
+        # Get user
+        user_id = order["user_id"]
+
+        # Get created date
+        created_on = order["created_on"]
+
+        # ------------ GET ITEMS FOR ORDER ------------- #
+
+        # Get all unique item IDs
+        items = list(Order.objects.values('item_id').filter(order_id=order_id))
+        item_ids = set()
+
+        for item in items:
+            item_ids.add(item['item_id'])
+
+        # Keep track of the order items
+        order_items = []
+
+        # For each item, create a new ITEM object (to be included in the ORDER object)
+        for item_id in item_ids:
+
+            # Get item
+            item = list(Order.objects.values('total_cost', 'product_id', 'toppings_selected').filter(order_id=order_id).filter(item_id=item_id)[:1])[0]
+
+            # Item Cost
+            item_cost = item["total_cost"]
+
+            # Get Product Info
+            product_id = item["product_id"]
+            product = product_info(product_id)
+
+            # Get toppings in item
+            toppings = Order.objects.values('toppings_selected').filter(order_id=order_id).filter(item_id=item_id)
+            item_toppings = []
+            for topping in toppings:
+                item_toppings.append(topping["toppings_selected"])
+
+            # Get topping names
+            toppings_info = topping_info(item_toppings)
+
+            new_item = {
+                'item_id': item_id,
+                'item_cost': float(item_cost),
+                'product_id': product_id,
+                'product_name': product["product_name"],
+                'product_type': product["product_type"],
+                'product_size': product["product_size"],
+                'toppings': toppings_info,
+            }
+
+            # Add to total order cost
+            order_cost += item["total_cost"]
+
+        # Add each item to order items
+        order_items.append(new_item)
+
+        # Create new order object
+        new_order = {
+            "order_id": order_id,
+            "user_id": user_id,
+            "username": user_info(user_id),
+            "created_on": created_on.__str__(),
+            "order_cost": float(order_cost),
+            "order_items": order_items,
+        }
+
+        # Add each order to the list of orders
+        new_orders.append(new_order)
+
+    # Log
+    log("Orders were retrieved.")
+
+    return HttpResponse(json.dumps(new_orders))
+
+
+# ------------------------------ FUNCTIONS ------------------------------ #
+
+
+# System Log
+def log(message):
+    now = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
+    print(" <<!>> {0} ({1})\n".format(message, now))
+
+
+# Get topping information
+def topping_info(topping_ids):
+    toppings = []
+
+    if topping_ids[0]:
+        for topping_id in topping_ids:
+            topping = list(Topping.objects.values(
+                'name').filter(pk=topping_id))[0]
+
+            output = {
+                "topping_id": topping_id,
+                "topping_name": topping["name"],
+            }
+            toppings.append(output)
+
+    return(toppings)
+
+# Get product information
+def product_info(product_id):
+    product = list(Product.objects.values(
+        'name', 'size', 'type').filter(pk=product_id))[0]
+
+    output = {
+        'product_name': product["name"],
+        'product_size': product["size"],
+        'product_type': product["type"],
+    }
+
+    return (output)
+
+
+# Get username from user id
+def user_info(user_id): 
+    user = list(User.objects.values('username').filter(pk=user_id))[0]
+
+    return(user["username"])
+
+

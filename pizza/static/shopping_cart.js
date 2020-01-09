@@ -64,7 +64,7 @@ function shopping_cart() {
                         $('#cart_price').html("<br>$" + cart_price.toFixed(2))
 
                         // Create the right html
-                        let label = "<div id='" + item.item_id + "'>" + "<hr>" + "<button class='btn remove-cart' style='background-color:transparent; border: none' data-id ='" + item.item_id + "'><small> ❌ </small>    </button>" + "<strong> Item #" + item.item_id + "</strong> - $" + data.total_price + "<br>" + data.product_label + " (" + data.product_size + ") - $" + data.product_price + "<br>"
+                        let label = "<div id='" + item.item_id + "'>" + "<hr>" + "<button class='btn remove-cart' style='background-color:transparent; border: none' data-id ='" + item.item_id + "'><small> ❌ </small>    </button>" + "<strong> Item </strong> - $" + data.total_price + "<br>" + data.product_label + " (" + data.product_size + ") - $" + data.product_price + "<br>"
 
                         if (data.toppings.length != 0) {
                             label = label + "<ul>"
@@ -100,8 +100,6 @@ function shopping_cart() {
                                 // Remove from view
                                 $('#' + item_to_remove).remove()
                                 $('#cart_price').html("<br> $0.00")
-
-                                // 
                             })
                         })
                     })
