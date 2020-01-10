@@ -19,7 +19,8 @@ function get_data_menu(callback) {
                 const div = $("<div id='" + element + "'></div")
 
                 // Create header for each product type
-                const header = $("<h3>" + element + "</h3")  
+                let header = $("<h3></h3")  
+                header.text(element)
 
                 // Create table for each product type
                 const table = $("<table class='table table-sm' id='" + element + "'></table>")

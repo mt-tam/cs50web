@@ -9,6 +9,35 @@ import simplejson as json
 from .models import Product, Topping, Order
 from django.contrib.auth.models import User
 
+# import the smtplib module. It should be included in Python by default
+import smtplib
+from email.message import EmailMessage
+from email.headerregistry import Address
+
+
+def email(request):
+
+    # set up the SMTP server
+    s = smtplib.SMTP(host='smtp.zoho.eu', port=587)
+    s.starttls()
+    s.login('hello@marius.pm', '<#7T["})qB>f')
+
+    # Create a text/plain message
+    msg = EmailMessage()
+
+    # setup the parameters of the message
+    msg['From']= Address("Marius' Pizza Place", 'hello', 'marius.pm')
+    msg['To']= 'mata14ac@student.cbs.dk'
+    msg['Subject']="This is TEST"
+
+    # add in the message body
+    msg.set_content("Whatsupp!!=!))=!#")
+    s.send_message(msg)
+    
+    del msg
+    s.quit
+
+    return HttpResponse("Email was sent!")
 
 # ------------------------------ HOME PAGE ------------------------------ #
 
@@ -187,7 +216,6 @@ def make_order(request):
 
     # Get current user
     current_user = request.user
-    print("User ID: " + str(current_user))
 
     # Find past orders
     past_orders = list(Order.objects.values(
@@ -199,23 +227,23 @@ def make_order(request):
         order_ids.append(order["order_id"])
 
     # Compute next order id
-    order_id = max(order_ids) + 1
-    print("Order ID: " + str(order_id))
+    if order_ids:
+        order_id = max(order_ids) + 1
+    else:
+        order_id = 0
 
     # Get list of items in order
     items = json.loads(request.body)
-    print("-------------")
 
     for item in items:
         # Extract item id
         item_id = item["item_id"]
-        print("Item ID: ", item_id)
+        
         # Extract product id
         product_id = item["product_id"]
-        print("Product ID: ", product_id)
+
         # Extract toppings id
         toppings = item["toppings"]
-        print("Topping IDs: " + str(toppings))
 
         # Get product information
         product = Product.objects.get(id=product_id)
@@ -225,7 +253,6 @@ def make_order(request):
         new_order = Order(order_id=order_id, item_id=item_id, product_id=Product.objects.get(
             id=product_id), user_id=current_user, total_cost=0)
         new_order.save()
-        print(new_order)
 
         # Compute item price
         item_price = 0
@@ -247,8 +274,6 @@ def make_order(request):
             # Compute total price
             item_price += price
 
-        print("Item Price: ", item_price)
-        print("-------------")
         new_order.total_cost = item_price
         new_order.save()
 
@@ -272,6 +297,7 @@ def get_orders(request):
 
     # Get all items in orders
     orders = list(Order.objects.values('order_id'))
+
     # Get all order IDs from database
     order_ids = set()
 
@@ -280,7 +306,7 @@ def get_orders(request):
 
     # Repackage into a new list of orders
     new_orders = []
-
+    
     # For each order, create a order package
     for order_id in order_ids:
 
@@ -302,9 +328,11 @@ def get_orders(request):
         items = list(Order.objects.values('item_id').filter(order_id=order_id))
         item_ids = set()
 
+        
+
         for item in items:
             item_ids.add(item['item_id'])
-
+        
         # Keep track of the order items
         order_items = []
 
@@ -329,7 +357,7 @@ def get_orders(request):
 
             # Get topping names
             toppings_info = topping_info(item_toppings)
-
+            
             new_item = {
                 'item_id': item_id,
                 'item_cost': float(item_cost),
@@ -343,8 +371,8 @@ def get_orders(request):
             # Add to total order cost
             order_cost += item["total_cost"]
 
-        # Add each item to order items
-        order_items.append(new_item)
+            # Add each item to order items
+            order_items.append(new_item)
 
         # Create new order object
         new_order = {
@@ -396,7 +424,7 @@ def product_info(product_id):
     product = list(Product.objects.values(
         'name', 'size', 'type').filter(pk=product_id))[0]
 
-    output = {
+    output = {  
         'product_name': product["name"],
         'product_size': product["size"],
         'product_type': product["type"],

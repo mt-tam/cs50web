@@ -2,12 +2,25 @@ function shopping_cart() {
 
     // ---------------- ADD TO SHOPPING CART ----------------- //
     $('#cart-button').on('click', () => {
+        
+        // Enable Order button
+        $('#make_order').attr("disabled", false);
+        
         // Log 
         console.log(">>> Shopping cart was opened")
 
         // Reset shopping cart
         const s_cart = $('#shopping_cart')
         s_cart.html("")
+
+        // Check if there is anything left in shopping cart
+        keys = Object.keys(localStorage)
+
+        // If empty, disable Order button
+        if (keys.length == 0) {
+            $('#cart_text').html("Your shopping cart is empty.")
+            $('#make_order').attr("disabled", true);
+        }
 
         // Get items (i.e. combos of product & topping IDs) from Local Storage
         let items = []
@@ -23,11 +36,9 @@ function shopping_cart() {
         }
         items.sort();
 
-        console.log(items)
-
         // If no items were found, show empty message
         if (items == null) {
-            $('#cart_text').html("Your shopping cart is empty.")
+            
         } else {
 
             // Keep track of total price of shopping cart
@@ -64,7 +75,7 @@ function shopping_cart() {
                         $('#cart_price').html("<br>$" + cart_price.toFixed(2))
 
                         // Create the right html
-                        let label = "<div id='" + item.item_id + "'>" + "<hr>" + "<button class='btn remove-cart' style='background-color:transparent; border: none' data-id ='" + item.item_id + "'><small> ❌ </small>    </button>" + "<strong> Item </strong> - $" + data.total_price + "<br>" + data.product_label + " (" + data.product_size + ") - $" + data.product_price + "<br>"
+                        let label = "<div id='" + item.item_id + "'>" + "<hr>" + "<button class='btn remove-cart' style='background-color:transparent; border: none' data-id ='" + item.item_id + "'><small> ❌ </small>    </button>" + "<strong> Item </strong> - $" + data.total_price.toFixed(2) + "<br>" + data.product_label + " (" + data.product_size + ") - $" + data.product_price.toFixed(2) + "<br>"
 
                         if (data.toppings.length != 0) {
                             label = label + "<ul>"
@@ -100,11 +111,20 @@ function shopping_cart() {
                                 // Remove from view
                                 $('#' + item_to_remove).remove()
                                 $('#cart_price').html("<br> $0.00")
+
+                                // Check if there is anything left in shopping cart
+                                keys = Object.keys(localStorage)
+
+                                // If empty, disable Order button
+                                if (keys.length == 0) {
+                                    $('#cart_text').html("Your shopping cart is empty.")
+                                    $('#make_order').attr("disabled", true);
+                                }
                             })
                         })
                     })
             })
         }
     })
-    
+
 }

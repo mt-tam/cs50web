@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 // Create header for each product type
                 const header = $("<h3>" + element + "</h3")
+                header.text(element)
 
                 // Create table for each product type
                 const table = $("<table class='table table-sm' id='" + element + "'></table>")
@@ -36,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 menu.append(div);
 
                 // Add header to type div
-                div.append(header);
+                div.append(header); 
 
                 // Add table to type div
                 div.append(table);
