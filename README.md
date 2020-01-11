@@ -4,7 +4,7 @@ Web Programming with Python and JavaScript
 
 # Description
 
->>> Standard User
+> Standard User
 This project allows users to browse and order pizzas, sandwiches among others. 
 
 -> They can browse the menu, sign up or login and order products. 
@@ -12,7 +12,7 @@ This project allows users to browse and order pizzas, sandwiches among others.
 -> They can view their shopping cart, see the total cost, and remove excess items if needed. 
 -> Finally they can go ahead and send their order in. 
 
->>> Staff/Admin User
+> Staff/Admin User
 
 -> They can access Django's Admin module to add, edit, or delete products & toppings in the menu, as well as view signed up users and orders.
 -> They can view all incoming orders directly in the Pizza Web App.
@@ -21,7 +21,7 @@ This project allows users to browse and order pizzas, sandwiches among others.
 
 # Components
 
-*** DJANGO APPS ***
+### DJANGO APPS
 
 1. orders ( /orders/views.py)
 Manages menu and orders.
@@ -34,9 +34,9 @@ Manages general project settings & holds static files.
 
 
 
-*** HTML files ***
+### HTML files
 
->>> /project3/pizza/accounts/templates/accounts
+> /project3/pizza/accounts/templates/accounts
 
 1. signup.html
 This page allows the user to sign up for an account.
@@ -45,7 +45,7 @@ This page allows the user to sign up for an account.
 This page allows the user to login into an existing account.
 
 
->>> /project3/pizza/orders/templates/orders
+> /project3/pizza/orders/templates/orders
 
 3. index.html
 This page show the full menu, as well as the options to login or sign up.
@@ -61,16 +61,18 @@ This page shows all incoming orders to Staff users.
 
 
 
-*** CSS files ***
-/project3/pizza/pizza/static 
+### CSS files
+
+> /project3/pizza/pizza/static 
 
 1. styles.css
 Adds a tiny bit of styling.
 
 
 
-*** JS files *** 
-/project3/pizza/pizza/static 
+### JS files
+
+> /project3/pizza/pizza/static 
 
 1. (f) get_data.js
 Contains functions that interact with the server to retrieve specific data.
