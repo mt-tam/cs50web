@@ -5,6 +5,7 @@ Web Programming with Python and JavaScript
 # Description
 
 > Standard User
+
 This project allows users to browse and order pizzas, sandwiches among others. 
 
 -> They can browse the menu, sign up or login and order products. 
