@@ -158,6 +158,7 @@ def get_available_toppings(request, product_id):
 def get_summary_product(request):
 
     item = json.loads(request.body)
+    print(item)
     product_id = item["product_id"]
     toppings_ids = item["toppings"]
 

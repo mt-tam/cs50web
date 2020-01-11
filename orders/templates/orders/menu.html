@@ -1,57 +1,52 @@
 {% extends "orders/base.html" %}
 
-<!-- Links Block-->
-{% block links %}
-
-<!-- Links to Bootstrap, Jquery & Popper-->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-    integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-    crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
-    integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
-    crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"
-    integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy"
-    crossorigin="anonymous"></script>
-
-<!-- Links to my own Javascript files -->
-{% load static %}
-<script type="text/javascript" src="{% static 'get_data_menu.js' %}"></script>
-<script type="text/javascript" src="{% static 'add_toppings.js' %}"></script>
-<script type="text/javascript" src="{% static 'shopping_cart.js' %}"></script>
-<script type="text/javascript" src="{% static 'make_order.js' %}"></script>
-
-<!-- Links to BootStrap Select (multiple select)-->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/css/bootstrap-select.min.css">
-
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.9/dist/js/bootstrap-select.min.js"></script>
-
-<!-- Link to a Cookie Library -->
-<script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
-
-<!-- Link to my own javascript files -->
+{% block MyScript %}
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        get_data_menu(add_toppings);
-        shopping_cart();
-        make_order();
+    $(document).ready(() => {
+
+        // Get Product Types from server
+        get_product_types()
+
+            // Display Product Types on page
+            .then(product_types => display_product_types(product_types))
+
+        // Get Products from server
+        get_products()
+
+            // Display Products on page
+            .then(products => display_products(products))
+
+            // Display Buy Buttons on page
+            .then(products => display_buy_buttons())
+
+
+            // Listen for event: BUY clicked
+            .then(response => add_toppings())
+
+            // Listen for event: ADD TO CART clicked Doesn't work.
+            .then(response => console.log(response))
+            
+        // Listen for event: SHOPPING CART clicked
+        .then(response => shopping_cart())
+
+        // Listen for event: ORDER clicked
+        .then(response => make_order())
+
     })
 </script>
-
 {% endblock %}
 
-<!-- Body -->
+<!-- BODY -->
 {% block body %}
 
-<!-- Title -->
+<!-- TITLE -->
 <h1 style="margin: 50px 300px 0 300px">Our Menu</h1>
 
-<!-- Subtitle -->
+<!-- SUBTITLE -->
 <h5 style="margin:0 300px 0 300px; color:grey">Explore our offering and easily make an order by adding items to your
     shopping cart.</h5>
 
-<!-- Menu -->
+<!-- MENU -->
 <div id="menu" style="margin: 50px 300px 50px 300px"></div>
 
 <!-- Shopping Cart (Modal) -->
@@ -104,7 +99,8 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal"> Close</button>
-                <button type="button" id="save_button" data-dismiss="modal" class="btn btn-primary"> ✔️ Save</button>
+                <button type="button" id="add_to_cart" data-dismiss="modal" class="btn btn-primary"> ✔️ Add to
+                    Cart</button>
             </div>
         </div>
     </div>

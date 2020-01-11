@@ -1,11 +1,12 @@
 function shopping_cart() {
 
-    // ---------------- ADD TO SHOPPING CART ----------------- //
+    // ---------------- DISPLAY SHOPPING CART ----------------- //
+
     $('#cart-button').on('click', () => {
-        
+
         // Enable Order button
         $('#make_order').attr("disabled", false);
-        
+
         // Log 
         console.log(">>> Shopping cart was opened")
 
@@ -22,24 +23,13 @@ function shopping_cart() {
             $('#make_order').attr("disabled", true);
         }
 
-        // Get items (i.e. combos of product & topping IDs) from Local Storage
-        let items = []
+        else {
+            // Get items (i.e. combos of product & topping IDs) from Local Storage
+            let items = []
 
-        // Check for up to 100 items in the local storage
-        for (var i = 1; i < 100; i++) {
-            if (localStorage.getItem(i) == null) {
-                continue
-            }
-            else {
-                items.push(JSON.parse(localStorage.getItem(i)))
-            }
-        }
-        items.sort();
+            keys.forEach(key => items.push(JSON.parse(localStorage.getItem(key))))
+            items.sort();
 
-        // If no items were found, show empty message
-        if (items == null) {
-            
-        } else {
 
             // Keep track of total price of shopping cart
             let cart_price = 0;
@@ -124,7 +114,10 @@ function shopping_cart() {
                         })
                     })
             })
+
         }
+
+
     })
 
 }
