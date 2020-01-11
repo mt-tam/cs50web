@@ -1,0 +1,7 @@
+Python 3.8.0
+Django 2.2.6.0
+bootstrap 4.0.0
+bootstrap-select 1.13.9
+jquery 3.2.1
+popper 1.12.9
+js.cookie 
