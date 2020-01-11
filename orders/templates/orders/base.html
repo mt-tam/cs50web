@@ -13,8 +13,8 @@
     <link href="{% static 'style.css' %}" rel="stylesheet" />
     <link href="{% static 'favicon.ico' %}" rel="icon" type="image/x-icon" />
     <script type="text/javascript" src="{% static '(f) get_data.js' %}"></script>
-    <script type="text/javascript" src="{% static '(f) display_menu.js' %}"></script>
-    <script type="text/javascript" src="{% static 'add_toppings.js' %}"></script>
+    <script type="text/javascript" src="{% static '(f) display_data.js' %}"></script>
+    <script type="text/javascript" src="{% static 'buy_item.js' %}"></script>
     <script type="text/javascript" src="{% static 'add_to_cart.js' %}"></script>
     <script type="text/javascript" src="{% static 'shopping_cart.js' %}"></script>
     <script type="text/javascript" src="{% static 'make_order.js' %}"></script>
@@ -29,6 +29,7 @@
     <script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
 
     {% block MyScript %} {% endblock %}
+    <title>{% block PageTitle %} {% endblock %}</title>
     
 </head>
 

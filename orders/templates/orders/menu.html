@@ -1,5 +1,7 @@
 {% extends "orders/base.html" %}
 
+{% block PageTitle %} Marius' Pizza | Menu {% endblock %}
+
 {% block MyScript %}
 <script>
     $(document).ready(() => {
@@ -19,18 +21,14 @@
             // Display Buy Buttons on page
             .then(products => display_buy_buttons())
 
-
             // Listen for event: BUY clicked
-            .then(response => add_toppings())
-
-            // Listen for event: ADD TO CART clicked Doesn't work.
-            .then(response => console.log(response))
-            
+            .then(response => buy_item())
+           
         // Listen for event: SHOPPING CART clicked
-        .then(response => shopping_cart())
+        shopping_cart()
 
         // Listen for event: ORDER clicked
-        .then(response => make_order())
+        make_order()
 
     })
 </script>

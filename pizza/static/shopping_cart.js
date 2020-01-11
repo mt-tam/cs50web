@@ -4,32 +4,31 @@ function shopping_cart() {
 
     $('#cart-button').on('click', () => {
 
-        // Enable Order button
-        $('#make_order').attr("disabled", false);
-
         // Log 
         console.log(">>> Shopping cart was opened")
 
-        // Reset shopping cart
-        const s_cart = $('#shopping_cart')
-        s_cart.html("")
+        // Reset Order button (to enabled)
+        $('#make_order').attr("disabled", false);
 
-        // Check if there is anything left in shopping cart
+        // Reset total price
+        $('#cart_price').html("")
+
+        // Reset shopping cart
+        $('#shopping_cart').html("")
+
+        // Check if there is anything in shopping cart (local storage)
         keys = Object.keys(localStorage)
 
-        // If empty, disable Order button
+        // If empty, disable Order button & show message
         if (keys.length == 0) {
             $('#cart_text').html("Your shopping cart is empty.")
             $('#make_order').attr("disabled", true);
         }
-
         else {
             // Get items (i.e. combos of product & topping IDs) from Local Storage
             let items = []
-
             keys.forEach(key => items.push(JSON.parse(localStorage.getItem(key))))
             items.sort();
-
 
             // Keep track of total price of shopping cart
             let cart_price = 0;
@@ -40,6 +39,7 @@ function shopping_cart() {
                 // Get cookie to bypass Cross Site Request Forgery protection // VERY IMPORTANT
                 let csrftoken = Cookies.get('csrftoken');
 
+                // Define request's body
                 const data = {
                     product_id: item.product_id,
                     toppings: item.toppings,
@@ -62,29 +62,31 @@ function shopping_cart() {
 
                         // Add item price to total price of cart
                         cart_price += data.total_price
+
+                        // Show total price
                         $('#cart_price').html("<br>$" + cart_price.toFixed(2))
 
-                        // Create the right html
-                        let label = "<div id='" + item.item_id + "'>" + "<hr>" + "<button class='btn remove-cart' style='background-color:transparent; border: none' data-id ='" + item.item_id + "'><small> ❌ </small>    </button>" + "<strong> Item </strong> - $" + data.total_price.toFixed(2) + "<br>" + data.product_label + " (" + data.product_size + ") - $" + data.product_price.toFixed(2) + "<br>"
+                        // Create the product label
+                        let item_label = $("<div id='" + item.item_id + "'>" + "<hr>" + "<button class='btn remove-cart' style='background-color:transparent; border: none' data-id ='" + item.item_id + "'><small> ❌ </small>    </button>" + "<strong> Item </strong> - $" + data.total_price.toFixed(2) + "<br>" + data.product_label + " (" + data.product_size + ") - $" + data.product_price.toFixed(2) + "<br></div>")
 
+                        // If there are toppings, start a unordered list
                         if (data.toppings.length != 0) {
-                            label = label + "<ul>"
+                            let toppings_list = $("<ul>")
+
                             // Go through each topping
                             data.toppings.forEach(element => {
 
-                                // If topping included then write "included"
-                                if (element.topping_price == 0) {
-                                    label = label + "<li> " + element.topping_name + " - included </li>"
-                                }
-                                else {
-                                    label = label + "<li> " + element.topping_name + " - $" + element.topping_price + "</li>"
-                                }
+                                // Show price or if topping is included
+                                price_included = data.topping_included ? " (included)" : " ($" + element.topping_price + ")"
+                                
+                                let topping_label = "<li> " + element.topping_name + price_included + "</li>"
+                                toppings_list.append(topping_label)
                             });
-                            label = label + "</ul>"
+                            item_label.append(toppings_list)
                         }
 
                         // Add item to shopping cart view
-                        s_cart.html(s_cart.html() + label + "</div>")
+                        $('#shopping_cart').append(item_label)
 
 
                         // ---------------- REMOVE FROM SHOPPING CART ----------------- //
@@ -108,6 +110,7 @@ function shopping_cart() {
                                 // If empty, disable Order button
                                 if (keys.length == 0) {
                                     $('#cart_text').html("Your shopping cart is empty.")
+                                    $('#shopping_cart').html("")
                                     $('#make_order').attr("disabled", true);
                                 }
                             })

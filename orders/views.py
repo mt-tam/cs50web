@@ -139,6 +139,7 @@ def get_available_toppings(request, product_id):
 
     # Return list of toppings and max number of toppings
     context = {
+        "product_id": product_id,
         "toppings": toppings_available,
         "max_toppings": max_toppings,
         "topping_included": topping_included,
@@ -158,7 +159,6 @@ def get_available_toppings(request, product_id):
 def get_summary_product(request):
 
     item = json.loads(request.body)
-    print(item)
     product_id = item["product_id"]
     toppings_ids = item["toppings"]
 
