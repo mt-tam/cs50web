@@ -1,5 +1,10 @@
 function show_orders(orders) {
-    
+
+    // Sort orders by created date (descending order)
+    orders.sort(function(a,b){
+        return new Date(b.created_on) - new Date(a.created_on);
+      });
+
     let table = $('#orders > table')
 
     // Create table headers

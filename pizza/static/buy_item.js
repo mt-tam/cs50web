@@ -6,6 +6,7 @@ function buy_item() {
 
     $('.buy-btn').each((index, element) => {
         $(element).on('click', (event) => {
+            console.log("button is clicked.")
 
             // Get product ID
             let product_id = $(element).attr('id')
@@ -47,6 +48,9 @@ function buy_item() {
 
 
 function selected_toppings(item_id, product_id, max_toppings) {
+    
+    // IMPORTANT DUDE,
+    $('#available_toppings').off('changed.bs.select');
 
     $('#available_toppings').on('changed.bs.select', function (e, clickedIndex, isSelected, newValue) {
 

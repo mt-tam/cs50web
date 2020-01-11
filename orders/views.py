@@ -20,6 +20,8 @@ def email(request):
     # set up the SMTP server
     s = smtplib.SMTP(host='smtp.zoho.eu', port=587)
     s.starttls()
+
+    # Change password & then add it to text file and put it in git ignore !!!!! *******
     s.login('hello@marius.pm', '<#7T["})qB>f')
 
     # Create a text/plain message
@@ -297,7 +299,8 @@ def orders(request):
 def get_orders(request):
 
     # Get all items in orders
-    orders = list(Order.objects.values('order_id'))
+    orders = list(Order.objects.values('order_id', 'created_on').order_by('-created_on'))
+    print("orders: ", orders)
 
     # Get all order IDs from database
     order_ids = set()
@@ -307,6 +310,7 @@ def get_orders(request):
 
     # Repackage into a new list of orders
     new_orders = []
+    print("new orders:", list(order_ids).sort(reverse= True))
     
     # For each order, create a order package
     for order_id in order_ids:
@@ -328,8 +332,6 @@ def get_orders(request):
         # Get all unique item IDs
         items = list(Order.objects.values('item_id').filter(order_id=order_id))
         item_ids = set()
-
-        
 
         for item in items:
             item_ids.add(item['item_id'])
