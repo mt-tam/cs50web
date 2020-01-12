@@ -17,5 +17,4 @@ urlpatterns = [
     path('make_order', views.make_order, name="make_order"),
     path('orders', views.orders, name="orders"),
     path('get_orders', views.get_orders, name="get_orders"),
-    path('email', views.email, name="email"),
 ]

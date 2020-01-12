@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 import datetime
 import simplejson as json
 
+from .s import l
+
 # Database Models
 from .models import Product, Topping, Order
 from django.contrib.auth.models import User
@@ -13,33 +15,78 @@ from django.contrib.auth.models import User
 import smtplib
 from email.message import EmailMessage
 from email.headerregistry import Address
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
 
-def email(request):
+def email(type, recipient, items, order_cost):
 
     # set up the SMTP server
     s = smtplib.SMTP(host='smtp.zoho.eu', port=587)
     s.starttls()
 
     # Change password & then add it to text file and put it in git ignore !!!!! *******
-    s.login('hello@marius.pm', '<#7T["})qB>f')
+    s.login('hello@marius.pm', l)
 
-    # Create a text/plain message
-    msg = EmailMessage()
+    # Create a html message
+    msg = MIMEMultipart('alternative')
+
+    # People
+    me = 'hello@marius.pm'
+    you = recipient.email
 
     # setup the parameters of the message
-    msg['From']= Address("Marius' Pizza Place", 'hello', 'marius.pm')
-    msg['To']= 'mata14ac@student.cbs.dk'
-    msg['Subject']="This is TEST"
+    msg['From'] = "Marius' Pizza <hello@marius.pm>"
+    msg['To'] = you
 
-    # add in the message body
-    msg.set_content("Whatsupp!!=!))=!#")
-    s.send_message(msg)
+    subject = ""
+    text = ""
+    html = ""
+
+    if type == 'confirmation':
+        subject = "Your order is confirmed."
+        html = "<div width='100%'><div align='center'><h4>🎉 Congratulations, " + recipient.first_name + "! 🎉<br> We have received your order and your food will soon be on its way!</h4>"
+
+    # Parse items info
+    for item in items:
+
+        # Extract product id
+        product = product_info(item["product_id"])
+        product_label = product["product_type"] + " - " + product["product_name"] + " (" + product["product_size"] + ")"
+        html = html + "<br><h3>👉 Item: </h3>" + "<p style='color:blue; font-weight: bold'>" + str(product_label) + "</p>"
+
+        # Extract toppings id
+        if len(item["toppings"]) != 0:
+            html = html + "with toppings: <br><ul>"
+            toppings = topping_info(item["toppings"])
+            for topping in toppings:
+                html = html + "<li>" + str(topping["topping_name"]) + "</li>"
+            html = html + "</ul>"
+    html = html + "<hr>"
+
+    # Extract total order cost
+    html = html + "<br><h4 style='background-color: blue'; color:white; font-size: 20px; font-weight: bold' >Total Order Cost: $" + str(order_cost) + "</h4></div></div>"
+
+    # Record the MIME types of both parts - text/plain and text/html.
+    part1 = MIMEText(text, 'plain')
+    part2 = MIMEText(html, 'html')
+
+    # add the subject and body
+    msg['Subject'] = subject
     
+    # Attach parts into message container.
+    msg.attach(part1)
+    msg.attach(part2)
+
+    # Send message
+    s.sendmail(me, you, msg.as_string())
+
     del msg
     s.quit
 
-    return HttpResponse("Email was sent!")
+    now = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
+
+    return ("Confirmation email was sent to {0} at {1} ".format(recipient, now))
 
 # ------------------------------ HOME PAGE ------------------------------ #
 
@@ -53,7 +100,6 @@ def index(request):
     return render(request, "orders/index.html")
 
 
-
 # ------------------------------ MENU ------------------------------ #
 
 
@@ -65,7 +111,6 @@ def menu(request):
 
     # Load page
     return render(request, "orders/menu.html", {"user": request.user})
-
 
 
 # ------------------------------ GET PRODUCT TYPES ------------------------------ #
@@ -91,7 +136,6 @@ def get_product_types(request):
     return HttpResponse(json.dumps(product_types_unique))
 
 
-
 # ------------------------------ GET ALL PRODUCTS ------------------------------ #
 
 
@@ -108,7 +152,6 @@ def get_products(request):
     return HttpResponse(json.dumps(products))
 
 
-
 # ------------------------------ GET ALL TOPPINGS ------------------------------ #
 
 
@@ -122,7 +165,6 @@ def get_toppings(request):
 
     # Return to web page as JSON
     return HttpResponse(json.dumps(toppings))
-
 
 
 # ------------------------------ GET AVAILABLE TOPPINGS ------------------------------ #
@@ -152,7 +194,6 @@ def get_available_toppings(request, product_id):
 
     # Return to web page as JSON
     return HttpResponse(json.dumps(context))
-
 
 
 # ------------------------------ GET SUMMARY PRODUCT ------------------------------ #
@@ -208,7 +249,6 @@ def get_summary_product(request):
     return HttpResponse(json.dumps(response))
 
 
-
 # ------------------------------ MAKE ORDER ------------------------------ #
 
 
@@ -235,13 +275,16 @@ def make_order(request):
     else:
         order_id = 0
 
+    # Keep track of total order cost
+    order_cost = 0
+
     # Get list of items in order
     items = json.loads(request.body)
 
     for item in items:
         # Extract item id
         item_id = item["item_id"]
-        
+
         # Extract product id
         product_id = item["product_id"]
 
@@ -277,11 +320,17 @@ def make_order(request):
             # Compute total price
             item_price += price
 
+        # Add item cost to order cost
+        order_cost += item_price
+
+        # Add item cost to database
         new_order.total_cost = item_price
         new_order.save()
 
-    return HttpResponse(json.dumps(order_id))
+    # Send confirmation email to user
+    print(email('confirmation', current_user, items, order_cost))
 
+    return HttpResponse(json.dumps(order_id))
 
 
 # ------------------------------------ SHOW ORDERS ------------------------------------ #
@@ -292,14 +341,14 @@ def orders(request):
     return render(request, 'orders/orders.html')
 
 
-
 # ------------------------------------ GET ORDERS ------------------------------------ #
 
 
 def get_orders(request):
 
     # Get all items in orders
-    orders = list(Order.objects.values('order_id', 'created_on').order_by('-created_on'))
+    orders = list(Order.objects.values(
+        'order_id', 'created_on').order_by('-created_on'))
     print("orders: ", orders)
 
     # Get all order IDs from database
@@ -310,13 +359,14 @@ def get_orders(request):
 
     # Repackage into a new list of orders
     new_orders = []
-    print("new orders:", list(order_ids).sort(reverse= True))
-    
+    print("new orders:", list(order_ids).sort(reverse=True))
+
     # For each order, create a order package
     for order_id in order_ids:
 
         # Get current order
-        order = list(Order.objects.values('user_id','created_on').filter(order_id=order_id)[:1])[0]
+        order = list(Order.objects.values(
+            'user_id', 'created_on').filter(order_id=order_id)[:1])[0]
 
         # Compute total order cost
         order_cost = 0
@@ -335,7 +385,7 @@ def get_orders(request):
 
         for item in items:
             item_ids.add(item['item_id'])
-        
+
         # Keep track of the order items
         order_items = []
 
@@ -343,7 +393,8 @@ def get_orders(request):
         for item_id in item_ids:
 
             # Get item
-            item = list(Order.objects.values('total_cost', 'product_id', 'toppings_selected').filter(order_id=order_id).filter(item_id=item_id)[:1])[0]
+            item = list(Order.objects.values('total_cost', 'product_id', 'toppings_selected').filter(
+                order_id=order_id).filter(item_id=item_id)[:1])[0]
 
             # Item Cost
             item_cost = item["total_cost"]
@@ -353,14 +404,15 @@ def get_orders(request):
             product = product_info(product_id)
 
             # Get toppings in item
-            toppings = Order.objects.values('toppings_selected').filter(order_id=order_id).filter(item_id=item_id)
+            toppings = Order.objects.values('toppings_selected').filter(
+                order_id=order_id).filter(item_id=item_id)
             item_toppings = []
             for topping in toppings:
                 item_toppings.append(topping["toppings_selected"])
 
             # Get topping names
             toppings_info = topping_info(item_toppings)
-            
+
             new_item = {
                 'item_id': item_id,
                 'item_cost': float(item_cost),
@@ -423,11 +475,13 @@ def topping_info(topping_ids):
     return(toppings)
 
 # Get product information
+
+
 def product_info(product_id):
     product = list(Product.objects.values(
         'name', 'size', 'type').filter(pk=product_id))[0]
 
-    output = {  
+    output = {
         'product_name': product["name"],
         'product_size': product["size"],
         'product_type': product["type"],
@@ -437,9 +491,7 @@ def product_info(product_id):
 
 
 # Get username from user id
-def user_info(user_id): 
+def user_info(user_id):
     user = list(User.objects.values('username').filter(pk=user_id))[0]
 
     return(user["username"])
-
-

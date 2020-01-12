@@ -31,13 +31,14 @@ function buy_item() {
                         // Show toppings view
                         $('#toppings-modal').modal('toggle')
 
-                        // Add toppings options
-                        display_available_toppings(product_id, max_toppings, available_toppings, topping_included)
-
                         // Reset error messagee
                         $('#error-toppings').html("")
-                        
+
+                        // Add toppings options
+                        display_available_toppings(product_id, max_toppings, available_toppings, topping_included)
+                       
                         // Track toppings selected
+                        item_id++;
                         selected_toppings(item_id, product_id, max_toppings);
 
                     }
@@ -72,6 +73,9 @@ function selected_toppings(item_id, product_id, max_toppings) {
             $('#add_to_cart').attr("disabled", true);
         }
         else {
+
+            // Reset error messagee
+            $('#error-toppings').html("")
 
             // Allow saving
             $('#add_to_cart').attr("disabled", false);

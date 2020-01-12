@@ -101,7 +101,7 @@ function shopping_cart() {
                                 localStorage.removeItem(item_to_remove)
 
                                 // Remove from view
-                                $('#' + item_to_remove).remove()
+                                $('div#' + item_to_remove).remove()
                                 $('#cart_price').html("<br> $0.00")
 
                                 // Check if there is anything left in shopping cart
