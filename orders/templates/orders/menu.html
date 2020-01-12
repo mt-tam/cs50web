@@ -1,0 +1,132 @@
+{% extends "orders/base.html" %}
+
+{% block PageTitle %} Marius' Pizza | Menu {% endblock %}
+
+{% block MyScript %}
+<script>
+    $(document).ready(() => {
+
+        // Get Product Types from server
+        get_product_types()
+
+            // Display Product Types on page
+            .then(product_types => display_product_types(product_types))
+
+        // Get Products from server
+        get_products()
+
+            // Display Products on page
+            .then(products => display_products(products))
+
+            // Display Buy Buttons on page
+            .then(products => display_buy_buttons())
+
+            // Listen for event: BUY clicked
+            .then(response => buy_item())
+           
+        // Listen for event: SHOPPING CART clicked
+        shopping_cart()
+
+        // Listen for event: ORDER clicked
+        make_order()
+
+    })
+</script>
+{% endblock %}
+
+<!-- BODY -->
+{% block body %}
+
+<!-- TITLE -->
+<h1 style="margin: 50px 300px 0 300px">Our Menu</h1>
+
+<!-- SUBTITLE -->
+<h5 style="margin:0 300px 0 300px; color:grey">Explore our offering and easily make an order by adding items to your
+    shopping cart.</h5>
+
+<!-- MENU -->
+<div id="menu" style="margin: 50px 300px 50px 300px"></div>
+
+<!-- Shopping Cart (Modal) -->
+
+<div class="modal fade" id="shopping-cart-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">🛒 Shopping Cart</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="cart_text"> Below you can find the items you ordered.</p>
+                <ul id="shopping_cart"></ul>
+                <div style="background-color:lightgrey" class="row">
+                    <div style="height:70px" class="col"><br><strong> 🏷️ Total Price</strong></div>
+                    <div style="height:70px ; text-align:right; font-weight: bold" class="col" id="cart_price"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="make_order" class="btn btn-primary" data-dismiss="modal"> 🔔 Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toppings Modal -->
+
+<div class="modal fade" id="toppings-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">🥩 Toppings</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="toppings" class="modal-body">
+                <p style="margin:10px" id="toppings-text"></p>
+                <select style="margin: 40px 10px 40px 10px" id="available_toppings" class="selectpicker" multiple
+                    data-width="75%">
+                </select>
+                <p style="color:red ;margin:10px" id="error-toppings"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"> Close</button>
+                <button type="button" id="add_to_cart" data-dismiss="modal" class="btn btn-primary"> ✔️ Add to
+                    Cart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#order_confirmation">
+    Launch demo modal
+  </button>
+  
+  <!-- Order Confirmation Modal -->
+  <div class="modal fade" id="order_confirmation" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Confirm order</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p style="font-size:16px">Are you sure you want to place this order?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" id="confirm_order" class="btn btn-primary" data-dismiss="modal">Confirm</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}}
