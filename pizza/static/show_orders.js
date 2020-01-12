@@ -26,7 +26,13 @@ function show_orders(orders) {
         let created_on = order_date.getFullYear() + "-" + (order_date.getMonth() + 1) + "-" + order_date.getDate() + " " + order_date.getHours() + ":" + order_date.getMinutes() + ":" + order_date.getSeconds()
 
         // Add ORDER values in row
-        row.html("<td>#" + order.order_id + "</td><td><ul id='" + order.order_id + "'></ul></td><td>$" + order.order_cost + "</td><td>" + order.username + "</td><td>" + created_on + "</td><td><button class='btn btn-success order-complete' id='" + order.order_id + "'> ☑️ Done </button>")
+        if (order.completed) {
+            row.css('background-color', '#c0ffb3')
+            row.html("<td>#" + order.order_id + "</td><td><ul id='" + order.order_id + "'></ul></td><td>$" + order.order_cost + "</td><td>" + order.username + "</td><td>" + created_on + "</td><td><p align='center'> ✔️ Done </p>")
+        }
+        else {
+            row.html("<td>#" + order.order_id + "</td><td><ul id='" + order.order_id + "'></ul></td><td>$" + order.order_cost + "</td><td>" + order.username + "</td><td>" + created_on + "</td><td><button class='btn btn-primary order-complete' id='" + order.order_id + "'> ✅ Mark as complete </button>")
+        }
 
         // Add ITEM values in nested table
         item_list = $("ul#" + CSS.escape(order.order_id))
@@ -55,6 +61,12 @@ function show_orders(orders) {
                 const button_id = $(element).attr('id')
                 console.log("button with id #", button_id," was clicked.")
                 $('tr#'+button_id).css("background-color", "#c0ffb3")
+
+                // Send to server to mark order as complete
+                fetch("complete_order/"+button_id)
+                .then(console.log("order #" + button_id +"was marked complete in system."))
+                .then(location.reload())
+
                 
                 $(element).off('click');
             })

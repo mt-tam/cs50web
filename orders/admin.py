@@ -22,7 +22,9 @@ class ToppingAdmin(admin.ModelAdmin):
 
 class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ['created_on',]
-    fields = ['order_id', 'item_id', 'product_id', 'toppings_selected', 'total_cost','user_id', 'created_on']
+    list_display = ['id', 'order_id', 'item_id', 'product_id', 'total_cost','completed', 'user_id', 'created_on']
+    list_editable = ['completed']
+    
     
 
 admin.site.register(Product, ProductAdmin)

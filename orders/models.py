@@ -27,6 +27,7 @@ class Order(models.Model):
     product_id = models.ForeignKey(Product, related_name="products_orders", on_delete=models.SET("Product was not found"))
     toppings_selected = models.ManyToManyField(Topping, related_name="toppings")
     total_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    completed = models.BooleanField(default=False)
     created_on = models.DateTimeField(auto_now_add=True)
     user_id = models.ForeignKey(User, related_name="users", on_delete=models.SET("User was not found"))
 

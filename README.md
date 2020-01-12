@@ -12,11 +12,13 @@ This project allows users to browse and order pizzas, sandwiches among others.
 -> If applicable, they can select one or more toppings for each product. 
 -> They can view their shopping cart, see the total cost, and remove excess items if needed. 
 -> Finally they can go ahead and send their order in. 
+-> They will receive two emails: one to confirm the order, and when the order is complete.
 
 > Staff/Admin User
 
 -> They can access Django's Admin module to add, edit, or delete products & toppings in the menu, as well as view signed up users and orders.
 -> They can view all incoming orders directly in the Pizza Web App.
+-> They can mark individual orders as complete.
 
 
 
@@ -25,7 +27,7 @@ This project allows users to browse and order pizzas, sandwiches among others.
 ### DJANGO APPS
 
 1. orders ( /orders/views.py)
-Manages menu and orders.
+Manages menu, orders & emails.
 
 2. account ( /accounts/views.py)
 Manages login & signup.
@@ -94,5 +96,5 @@ Allows user to see all items fully displayed in shopping cart and see the total 
 Allows user to make an order with the items present in the shopping cart.
 
 7. show_orders.js
-Allows STAFF/ADMIN users to see all incoming orders.
+Allows STAFF/ADMIN users to see all incoming orders and mark them as complete.
 

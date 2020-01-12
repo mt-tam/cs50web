@@ -11,7 +11,7 @@ function make_order() {
 
         // If empty, don't do much
         if (keys.length == 0) {
-            console.log("Shopping cart is empty. We cannot process this order.")
+            console.log(">>> Shopping cart is empty. We cannot process this order.")
         }
         else {
             // Get items (i.e. combos of product & topping IDs) from Local Storage
@@ -19,7 +19,7 @@ function make_order() {
 
             keys.forEach(key => items.push(JSON.parse(localStorage.getItem(key))))
             items.sort();
-            console.log("Order items: ", items);
+            console.log(">>> Order items: ", items);
 
             // Get cookie to bypass Cross Site Request Forgery protection // VERY IMPORTANT
             let csrftoken = Cookies.get('csrftoken');

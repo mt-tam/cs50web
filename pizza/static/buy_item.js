@@ -1,16 +1,27 @@
 function buy_item() {
 
-    let item_id = 0;
+    // Get highest item id currently in shopping cart
+    let item_id
+    keys = Object.keys(localStorage)
+    keys = keys.map(n => parseInt(n))
+    if (keys.length == 0) {
+        item_id = 0;
+    } else {
+        item_id = Math.max(...keys)
+    }
+    
+    console.log(item_id)
 
     // ----------- WHEN ANY BUY BUTTON IS CLICKED ----------- //
 
     $('.buy-btn').each((index, element) => {
         $(element).on('click', (event) => {
-            console.log("button is clicked.")
+
+            item_id++;
 
             // Get product ID
             let product_id = $(element).attr('id')
-            console.log("Product selected :", product_id)
+            console.log(">>> Product selected: #", product_id)
 
             // Get available toppings
             get_available_toppings(product_id)
@@ -18,11 +29,10 @@ function buy_item() {
                     const available_toppings = response.toppings;
                     const max_toppings = response.max_toppings;
                     const topping_included = response.topping_included;
-                    console.log("Max toppings: ", max_toppings)
+                    console.log(">>> Max toppings: ", max_toppings)
 
                     // If no toppings allowed, add directly to cart
                     if (max_toppings == 0) {
-                        item_id++;
                         add_to_cart(item_id, product_id, available_toppings)
                     }
 
@@ -38,7 +48,6 @@ function buy_item() {
                         display_available_toppings(product_id, max_toppings, available_toppings, topping_included)
                        
                         // Track toppings selected
-                        item_id++;
                         selected_toppings(item_id, product_id, max_toppings);
 
                     }
@@ -61,7 +70,7 @@ function selected_toppings(item_id, product_id, max_toppings) {
 
         // Check number of toppings selected
         const nr_selections = $('li.selected').length
-        console.log("You selected : " + nr_selections + "/" + max_toppings + " allowed toppings.")
+        console.log(">>> You selected : " + nr_selections + "/" + max_toppings + " allowed toppings.")
 
         // Show error message if too many are selected
         if (nr_selections > max_toppings) {

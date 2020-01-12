@@ -1,5 +1,7 @@
 function add_to_cart(item_id, product_id, topping_ids) {
 
+    console.log(item_id, " - ", product_id)
+
     // -------------- SAVE IN LOCAL STORAGE -------------//
 
     // Create the new item
@@ -19,7 +21,6 @@ function add_to_cart(item_id, product_id, topping_ids) {
     let success_message = "<strong> Success ! </strong> <br>" + "You have added a new product to your shopping cart"
 
     // If there are toppings involved, show them too
-    console.log(topping_ids.length)
     if (topping_ids.length != 0) {
         success_message += " with some toppings."
     }
