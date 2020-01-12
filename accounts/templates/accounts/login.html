@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Link to Bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+        <!-- Links to my static files -->
+        {% load static %}
+        <link href="{% static 'favicon.ico' %}" rel="icon" type="image/x-icon" />
+    
+        <title>Marius' Pizza: Login</title>
+
+</head>
+
+<body style="background-color:#f3f3f3">
+
+  <!-- NAVBAR -->
+  <nav style="background-color: #550a46" class="navbar sticky-top navbar-dark">
+    <!-- Show logo -->
+    <a class="navbar-brand" href="{% url 'index' %}">
+      <img src="https://image.flaticon.com/icons/svg/1293/1293171.svg" width="25" height="25">
+      Marius' Pizza Shop
+    </a>
+  </nav>
+
+    <div style="margin: 100px 150px; max-width: 800px">
+    <h2 style="margin: 0 35px 0px">Login</h2>
+    <p style="margin: 15px 35px 35px; color:grey">If you don't have an account, <a href="{% url 'signup' %}">Sign Up</a> here.</p>
+
+    <form action="{% url 'mylogin'%}" method="post">
+      {% csrf_token %}
+      <div class="col" style="margin:20px"><input autofocus class="form-control" name="username" type="text" placeholder="Username">
+      </div>
+      <div class="col" style="margin:20px"><input class="form-control" name="password" type="password"
+          placeholder="Password"></div>
+      {% if message %}
+      <p class="col" style="margin:20px; color: red">{{message}}</p>
+      {% endif %}
+      <button class="btn btn-primary" style="margin:0 0 0 35px" type="submit">Login</button>
+    </form>
+  </div>
+</body>
+
+</html>

@@ -1,0 +1,70 @@
+{% extends "orders/base.html" %}
+
+{% block PageTitle %} Marius' Pizza | Orders {% endblock %}
+
+{% block MyScript %}
+{% load static %}
+<script type="text/javascript" src="{% static 'show_orders.js' %}"></script>
+
+<script>
+$(document).ready( () => {
+
+    // Allow the shopping cart to function
+    shopping_cart();
+    make_order();
+
+    // If order is made while on "ORDERS" page then refresh page.
+    $('#make_order').on('click', () => location.reload())
+
+    // Get Orders from server
+    get_orders()
+        
+        // Display Orders on page
+        .then(orders => show_orders(orders))
+
+})
+</script>
+{% endblock %}
+
+<!-- Body -->
+{% block body %}
+
+<!-- Title -->
+<h1 style="margin: 50px 100px 0 100px">Orders</h1>
+
+<!-- Subtitle -->
+<h5 style="margin:0 100px 0 100px; color:grey">View incoming orders from customers.</h5>
+
+<!-- Orders -->
+<div id="orders" style="margin: 50px 100px 50px 100px">
+<table class="table table-bordered table-striped table-sm "></table>
+</div>
+
+<!-- Shopping Cart (Modal) -->
+<div class="modal fade" id="shopping-cart-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">🛒 Shopping Cart</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="cart_text"> Below you can find the items you ordered.</p>
+                <ul id="shopping_cart"></ul>
+                <div style="background-color:lightgrey" class="row">
+                    <div style="height:70px" class="col"><br><strong> 🏷️ Total Price</strong></div>
+                    <div style="height:70px ; text-align:right; font-weight: bold" class="col" id="cart_price"></div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" id="make_order" class="btn btn-primary"> 🔔 Order</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}}
