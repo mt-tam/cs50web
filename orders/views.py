@@ -40,7 +40,6 @@ def email(type, recipient, items, order_cost):
     msg['To'] = you
 
     subject = ""
-    text = ""
     html = ""
 
     if type == 'confirmation':
@@ -78,20 +77,17 @@ def email(type, recipient, items, order_cost):
         html = html + '<img src="https://media.giphy.com/media/12eqszWUMoRjVe/200w_d.gif">'
 
     # Record the MIME types of both parts - text/plain and text/html.
-    part1 = MIMEText(text, 'plain')
     part2 = MIMEText(html, 'html')
 
     # add the subject and body
     msg['Subject'] = subject
 
     # Attach parts into message container.
-    msg.attach(part1)
     msg.attach(part2)
 
     # Send message
     s.sendmail(me, you, msg.as_string())
 
-    del msg
     s.quit
 
     now = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
@@ -361,7 +357,7 @@ def get_orders(request):
 
     # Get all items in orders
     orders = list(Order.objects.values('order_id', 'created_on','user_id'))
-    
+
     # Get all order IDs from database
     order_ids = set()
 

@@ -9,8 +9,7 @@ function buy_item() {
     } else {
         item_id = Math.max(...keys)
     }
-    
-    console.log(item_id)
+
 
     // ----------- WHEN ANY BUY BUTTON IS CLICKED ----------- //
 

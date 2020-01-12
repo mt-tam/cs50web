@@ -12,12 +12,14 @@ This project allows users to browse and order pizzas, sandwiches among others.
 -> If applicable, they can select one or more toppings for each product. 
 -> They can view their shopping cart, see the total cost, and remove excess items if needed. 
 -> Finally they can go ahead and send their order in. 
+[PERSONAL TOUCH below]
 -> They will receive two emails: one to confirm the order, and when the order is complete.
 
 > Staff/Admin User
 
 -> They can access Django's Admin module to add, edit, or delete products & toppings in the menu, as well as view signed up users and orders.
 -> They can view all incoming orders directly in the Pizza Web App.
+[PERSONAL TOUCH below]
 -> They can mark individual orders as complete.
 
 
